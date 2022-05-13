@@ -53,7 +53,7 @@ jobs:
           pwd
           ls -ltr /home/runner/work/cheetah-server/
           ls -ltr /home/runner/work
-          ls -ltr /home/runner/work/cheetah-server/target/
+          ls -ltr /home/runner/work/cheetah-server/cheetah-server/
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
