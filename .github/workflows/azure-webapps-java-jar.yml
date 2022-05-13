@@ -48,7 +48,7 @@ jobs:
         run: |
           gradle clean build
           pwd
-          ls -ltr
+          ls -ltr ./build/libs
           echo '-------'
           pwd
           ls -ltr /home/runner/work/cheetah-server/
@@ -59,7 +59,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: java-app
-          path: '/home/runner/work/cheetah-server/target/*.jar'
+          path: '/home/runner/work/cheetah-server/cheetah-server/build/libs/*.jar'
 
   deploy:
     runs-on: ubuntu-latest
