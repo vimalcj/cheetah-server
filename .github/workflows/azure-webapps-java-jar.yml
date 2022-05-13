@@ -59,7 +59,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: java-app
-          path: '/home/runner/work/cheetah-server/cheetah-server/build/libs/*.jar'
+          path: '/home/runner/work/cheetah-server/cheetah-server/build/libs/cheetah-server-0.0.1-SNAPSHOT.jar'
 
   deploy:
     runs-on: ubuntu-latest
