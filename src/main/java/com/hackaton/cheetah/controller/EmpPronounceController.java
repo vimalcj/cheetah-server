@@ -29,6 +29,9 @@ public class EmpPronounceController {
     @Autowired
     TextToSpeechService textToSpeechService;
 
+    @Autowired
+    ExcelService excelFileService;
+
     @GetMapping("/getAllEmployees")
     public ResponseEntity<List<Employee>> getAllEmployees() {
         try {
@@ -43,7 +46,7 @@ public class EmpPronounceController {
         }
     }
 
-    @PostMapping("/uploadVoice")
+    @PostMapping("/standard-voice")
     public ResponseEntity<Employee> postVoiceRecord(@RequestBody Employee employee) {
         try {
             textToSpeechService.synthesisToMp3FileAsync(employee);
@@ -57,14 +60,13 @@ public class EmpPronounceController {
         return new ResponseEntity<Employee>(employee, HttpStatus.OK);
     }
 
-    @Autowired
-    ExcelService fileService;
-    @PostMapping("/uploadBulkVoices")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+
+    @PostMapping( value="/uploadfor-bulk-standard-voices", consumes = "multipart/form-data")
+    public ResponseEntity<String> uploadFile(@RequestParam("uploadFile") MultipartFile file) {
         String message = "";
         if (ExcelHelperService.hasExcelFormat(file)) {
             try {
-                List<Employee> employeeList =  fileService.readFile(file);
+                List<Employee> employeeList =  excelFileService.readFile(file);
                 if (employeeList.isEmpty()) {
                     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
                 }else{
@@ -85,10 +87,10 @@ public class EmpPronounceController {
     }
 
 
-    @PostMapping("/customVoice")
+    @PostMapping(value = "/non-standard-voice", consumes = "multipart/form-data")
     public ResponseEntity<Employee> updateVoiceRecord(@RequestParam("empName") String empName,
                                                       @RequestParam("empId") Long empId,
-                                                      @RequestParam("file") MultipartFile file) {
+                                                      @RequestParam("uploadFile") MultipartFile file) {
         Employee UpdatedEmp = null;
         try {
             UpdatedEmp = textToSpeechService.updateExistingVoiceFile(file.getBytes(),empName,empId);
