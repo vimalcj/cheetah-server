@@ -72,7 +72,7 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
         with:
-          name: jav-app
+          name: java-app
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
