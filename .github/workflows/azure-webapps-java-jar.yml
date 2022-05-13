@@ -47,8 +47,13 @@ jobs:
       - name: Build with Gradle
         run: |
           gradle clean build
-          echo pwd
+          pwd
           ls -ltr
+          echo '-------'
+          pwd
+          ls -ltr /home/runner/work/cheetah-server/
+          ls -ltr /home/runner/work
+          ls -ltr /home/runner/work/cheetah-server/target/
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
