@@ -1,4 +1,4 @@
-package com.hackaton.cheetah.cheetahserver;
+package com.hackaton.cheetah;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
