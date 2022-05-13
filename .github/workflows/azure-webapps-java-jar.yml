@@ -45,7 +45,10 @@ jobs:
           cache: 'gradle'
 
       - name: Build with Gradle
-        run: gradle clean build
+        run: |
+          gradle clean build
+          echo pwd
+          ls -ltr
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
