@@ -3,17 +3,14 @@ package com.hackaton.cheetah.service;
 import com.azure.storage.file.share.ShareDirectoryClient;
 import com.azure.storage.file.share.ShareFileClient;
 import com.azure.storage.file.share.ShareFileClientBuilder;
-import com.azure.storage.file.share.ShareServiceVersion;
 import com.azure.storage.file.share.models.ShareFileUploadInfo;
 import com.hackaton.cheetah.model.Employee;
 import com.hackaton.cheetah.repository.EmployeeRepository;
 import com.microsoft.cognitiveservices.speech.*;
 import lombok.extern.slf4j.Slf4j;
-import com.microsoft.cognitiveservices.speech.audio.AudioConfig;
-import com.microsoft.cognitiveservices.speech.audio.AudioOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
@@ -34,14 +31,13 @@ public class TextToSpeechService {
 
     private static final String ServiceRegion = "eastus";
 
-    private String signaturePolicy ="?sv=2020-10-02&ss=btqf&srt=sco&st=2022-05-14T11%3A37%3A43Z&se=2022-05-15T11%3A37%3A43Z&sp=rwdxlcup&sig=qcyzPuJoo%2BQIxj7SnrRTJANocvqyc6MTb6lVGw1kvj0%3D";
+    private final String signaturePolicy = "?sv=2020-10-02&ss=btqf&srt=sco&st=2022-05-14T11%3A37%3A43Z&se=2022-05-15T11%3A37%3A43Z&sp=rwdxlcup&sig=qcyzPuJoo%2BQIxj7SnrRTJANocvqyc6MTb6lVGw1kvj0%3D";
 
     // Speech synthesis to MP3 file.
-    public void synthesisToMp3FileAsync(Employee employee) throws InterruptedException, ExecutionException 
-    {
+    public void synthesisToMp3FileAsync(Employee employee) throws InterruptedException, ExecutionException {
         SpeechConfig config = SpeechConfig.fromSubscription(SubscriptionKey, ServiceRegion);
 
-        if(!StringUtils.isEmpty(employee.getCountry()))
+        if (!ObjectUtils.isEmpty(employee.getCountry()))
             config.setSpeechSynthesisLanguage(employee.getCountry());
 
         config.setSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3);
@@ -58,6 +54,7 @@ public class TextToSpeechService {
             //Files.write(path, bytes);
             //String upLoadPath = uploadFileToCloud(path.toFile().getAbsolutePath(), fileName);
             String upLoadPath = uploadFileToCloud(result.getAudioData(), fileName);
+            upLoadPath = upLoadPath +signaturePolicy;
             employee.setRecordUrl(upLoadPath);
             employeeRepository.save(employee);
         } else if (result.getReason() == ResultReason.Canceled) {
@@ -97,18 +94,18 @@ public class TextToSpeechService {
             System.out.println("uploadFile exception: " + e.getMessage());
             return "";
         }
-    }
+    }*/
 
 
-    public Employee updateExistingVoiceFile(byte[] bytes ,String empName,Long empId) throws  IOException{
-        String fileName = empName+"-"+empId+".mp3";
+    public Employee updateExistingVoiceFile(byte[] bytes, String empName, Long empId) throws IOException {
+        String fileName = empName + "-" + empId + ".mp3";
         Path path = Paths.get(fileName);
         Files.write(path, bytes);
-       // String upLoadPath = uploadFileToCloud(path.toFile().getAbsolutePath(),fileName);
-        String upLoadPath = uploadFileToCloud(fileName,bytes);
-        upLoadPath = upLoadPath +signaturePolicy;
-        Employee employee = new Employee(empId,empName,false,true,upLoadPath);
-       // employee.setRecordUrl(upLoadPath);
+        // String upLoadPath = uploadFileToCloud(path.toFile().getAbsolutePath(),fileName);
+        String upLoadPath = uploadFileToCloud(bytes, fileName);
+        upLoadPath = upLoadPath + signaturePolicy;
+        Employee employee = new Employee(empId, empName, false, true, upLoadPath);
+        // employee.setRecordUrl(upLoadPath);
         employeeRepository.save(employee);
         Files.delete(path);
         return employee;
@@ -125,7 +122,7 @@ public class TextToSpeechService {
             System.out.println("uploadFile fileName: " + fileName);
             ShareFileClient fileClient = dirClient.getFileClient(fileName);
             fileClient.create(1024000);
-            ShareFileUploadInfo shareFileUploadInfo = fileClient.upload(new ByteArrayInputStream(audioBytes), audioBytes.length, null);
+            ShareFileUploadInfo shareFileUploadInfo = fileClient.upload(new ByteArrayInputStream(audioBytes), audioBytes.length);
             log.info("Complete uploading the data with eTag: " + shareFileUploadInfo.getETag());
             return filepath + fileName;
         } catch (Exception e) {
