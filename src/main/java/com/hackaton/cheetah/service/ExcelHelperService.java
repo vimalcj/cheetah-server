@@ -14,16 +14,19 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
+
 public class ExcelHelperService {
     public static String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     //static String[] HEADERs = { "EmpId", "EmpName", "Voice URL", "isAdmin","isActive" };
     static String SHEET = "Employees";
+
     public static boolean hasExcelFormat(MultipartFile file) {
         if (!TYPE.equals(file.getContentType())) {
             return false;
         }
         return true;
     }
+
     public static List<Employee> excelToEmployees(InputStream is) {
         try {
             Workbook workbook = new XSSFWorkbook(is);

@@ -30,7 +30,6 @@ public class TextToSpeechService {
 
     private final String signaturePolicy = "?sv=2020-10-02&ss=btqf&srt=sco&st=2022-05-14T11%3A37%3A43Z&se=2022-05-15T11%3A37%3A43Z&sp=rwdxlcup&sig=qcyzPuJoo%2BQIxj7SnrRTJANocvqyc6MTb6lVGw1kvj0%3D";
 
-    // Speech synthesis to MP3 file.
     public void synthesisToMp3FileAsync(Employee employee) {
         try {
             SpeechConfig config = SpeechConfig.fromSubscription(SubscriptionKey, ServiceRegion);
@@ -40,24 +39,17 @@ public class TextToSpeechService {
                 config.setSpeechSynthesisLanguage(employee.getCountry());
 
             PullAudioOutputStream stream = PullAudioOutputStream.create();
-
             config.setSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3);
             String fileName = employee.getEmpName() + "-" + employee.getEmpId() + ".mp3";
 
-
-            //AudioConfig fileOutput = AudioConfig.fromWavFileOutput(fileName);
             AudioConfig streamOutput = AudioConfig.fromStreamOutput(stream);
-
-            // Creates a speech synthesizer using an mp3 file as audio output.
             SpeechSynthesizer synthesizer = new SpeechSynthesizer(config, streamOutput);
 
             String text = employee.getEmpName();
             SpeechSynthesisResult result = synthesizer.SpeakTextAsync(text).get();
             if (result.getReason() == ResultReason.SynthesizingAudioCompleted) {
                 log.info("Speech synthesized for text [" + text + "], and the audio was saved to [" + fileName + "]");
-                //   result.getAudioData();
                 byte[] bytes = result.getAudioData();
-                // Files.write(path, bytes);
                 String upLoadPath = uploadFileToCloud(fileName, bytes);
                 upLoadPath = upLoadPath + signaturePolicy;
                 employee.setRecordUrl(upLoadPath);
@@ -78,8 +70,6 @@ public class TextToSpeechService {
             }
 
             synthesizer.close();
-            //  fileOutput.close()
-            //Files.delete(path)
             streamOutput.close();
         } catch (Exception e) {
             log.error("error in synthesisToMp3FileAsync function", e);
@@ -95,12 +85,8 @@ public class TextToSpeechService {
                     .resourcePath("test")
                     .buildDirectoryClient();
 
-            log.info("uploadFile fileNmae: " + fileName);
-            //ShareFileClient fileClient = dirClient.getFileClient(fileName);
-
+            log.info("uploadFile fileName: " + fileName);
             ShareFileClient fileClient = dirClient.createFile(fileName, bytes.length);
-
-            //fileClient.create(1024000);
             fileClient.upload(bis, bytes.length);
             return filepath + fileName;
         } catch (Exception e) {
