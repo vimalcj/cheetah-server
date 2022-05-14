@@ -99,7 +99,7 @@ public class TextToSpeechService {
         Path path = Paths.get(fileName);
         Files.write(path, bytes);
         String upLoadPath = uploadFileToCloud(path.toFile().getAbsolutePath(),fileName);
-        Employee employee = new Employee(empName,empId,upLoadPath);
+        Employee employee = new Employee(empId,empName,false,true,upLoadPath);
        // employee.setRecordUrl(upLoadPath);
         employeeRepository.save(employee);
         Files.delete(path);

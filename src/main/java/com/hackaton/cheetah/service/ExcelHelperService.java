@@ -15,7 +15,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 public class ExcelHelperService {
     public static String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-    //static String[] HEADERs = { "Id", "Title", "Description", "Published" };
+    //static String[] HEADERs = { "EmpId", "EmpName", "Voice URL", "isAdmin","isActive" };
     static String SHEET = "Employees";
     public static boolean hasExcelFormat(MultipartFile file) {
         if (!TYPE.equals(file.getContentType())) {
@@ -51,6 +51,12 @@ public class ExcelHelperService {
                             break;
                         case 2:
                             employee.setRecordUrl(currentCell.getStringCellValue());
+                            break;
+                        case 3:
+                            employee.setIsAdmin(currentCell.getBooleanCellValue());
+                            break;
+                        case 4:
+                            employee.setIsActive(currentCell.getBooleanCellValue());
                             break;
                         default:
                             break;

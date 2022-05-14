@@ -46,7 +46,7 @@ public class EmpPronounceController {
         }
     }
 
-    @PostMapping("/standard-voice")
+    @PostMapping("/standard/record")
     public ResponseEntity<Employee> postVoiceRecord(@RequestBody Employee employee) {
         try {
             textToSpeechService.synthesisToMp3FileAsync(employee);
@@ -61,8 +61,8 @@ public class EmpPronounceController {
     }
 
 
-    @PostMapping( value="/uploadfor-bulk-standard-voices", consumes = "multipart/form-data")
-    public ResponseEntity<String> uploadFile(@RequestParam("uploadFile") MultipartFile file) {
+    @PostMapping( value="/admin/upload", consumes = "multipart/form-data")
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         String message = "";
         if (ExcelHelperService.hasExcelFormat(file)) {
             try {
@@ -87,10 +87,10 @@ public class EmpPronounceController {
     }
 
 
-    @PostMapping(value = "/non-standard-voice", consumes = "multipart/form-data")
+    @PostMapping(value = "/record", consumes = "multipart/form-data")
     public ResponseEntity<Employee> updateVoiceRecord(@RequestParam("empName") String empName,
                                                       @RequestParam("empId") Long empId,
-                                                      @RequestParam("uploadFile") MultipartFile file) {
+                                                      @RequestParam("file") MultipartFile file) {
         Employee UpdatedEmp = null;
         try {
             UpdatedEmp = textToSpeechService.updateExistingVoiceFile(file.getBytes(),empName,empId);

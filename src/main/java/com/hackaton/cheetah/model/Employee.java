@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -12,23 +13,46 @@ import javax.persistence.Table;
 @Data
 @Getter
 @Setter
-@Table(name = "Employee_Pronounce_test")
+@Table(name = "Employee_Pronouncation")
 @Entity
 public class Employee {
 
     @Id
+    @Column(name="emp_id")
     private Long empId;
 
+    @Column(name="emp_name")
     private String empName;
 
+    @Column(name="is_admin")
+    private Boolean isAdmin;
+
+    @Column(name="is_active")
+    private Boolean isActive;
+
+    @Column(name="record_url")
     private String recordUrl;
+
+    @Column(name="image_url")
+    private String imageUrl;
+
+    @Column(name="password")
+    private String password;
+
+    @Column(name="email")
+    private String email;
 
     public Employee() {
 
     }
-    public Employee(String empName, Long empId, String recordUrl) {
-        this.empName = empName;
+
+
+
+    public Employee(Long empId, String empName, Boolean isAdmin, Boolean isActive, String recordUrl) {
         this.empId = empId;
+        this.empName = empName;
+        this.isAdmin = isAdmin;
+        this.isActive = isActive;
         this.recordUrl = recordUrl;
     }
 
