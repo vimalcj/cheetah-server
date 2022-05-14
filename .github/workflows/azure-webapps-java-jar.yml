@@ -26,12 +26,17 @@ jobs:
           gradle clean build
           pwd
           dir .\build\libs
-          echo " build number is: ${env:GITHUB_RUN_ID} -- ${env:GITHUB_RUN_NUMBER} -- ${env:GITHUB_RUN_ATTEMPT} -- $GITHUB_RUN_ID"
+          echo " build number is: ${{env.GITHUB_RUN_ID}} -- ${{env.GITHUB_RUN_NUMBER}} -- ${{env.GITHUB_RUN_ATTEMPT}} -- ${env:GITHUB_RUN_ID}"
+
+      - name: Generate artifact name
+        id: generate-name
+        run: |
+          echo "::set-output name=artifact::${{ github.event.repository.name }}.${{ github.ref_name }}.${{ github.run_id }}.zip"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
-          name: java-app-${env:GITHUB_RUN_NUMBER}.${env:GITHUB_RUN_ATTEMPT}
+          name: ${{ steps.generate-name.outputs.artifact }}
           path: './build/libs/cheetah-server-0.0.1-SNAPSHOT.jar'
 
   deploy:
@@ -45,7 +50,7 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v2
         with:
-          name: java-app-${env:GITHUB_RUN_NUMBER}.${env:GITHUB_RUN_ATTEMPT}
+          name: ${{ steps.generate-name.outputs.artifact }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
