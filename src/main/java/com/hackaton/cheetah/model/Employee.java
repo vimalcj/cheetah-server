@@ -9,6 +9,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.sql.Timestamp;
+import java.util.Date;
 
 @Data
 @Getter
@@ -44,6 +46,12 @@ public class Employee {
 
     @Column(name="country_lang")
     private String country;
+
+    @Column(name="created_date")
+    private Timestamp createdDate;
+
+    @Column(name="updated_date")
+    private Timestamp updatedDate;
 
     public Employee() {
 

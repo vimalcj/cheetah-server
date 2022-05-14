@@ -18,6 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/cheetah")
+@CrossOrigin
 @Slf4j
 public class EmpPronounceController {
 
@@ -81,12 +82,17 @@ public class EmpPronounceController {
 
 
     @PostMapping(value = "/record", consumes = "multipart/form-data")
-    public ResponseEntity<Employee> updateVoiceRecord(@RequestParam("empName") String empName,
-                                                      @RequestParam("empId") Long empId,
+    public ResponseEntity<Employee> updateVoiceRecord(@RequestParam("empId") Long empId,
                                                       @RequestParam("file") MultipartFile file) {
         Employee UpdatedEmp = null;
         try {
-            UpdatedEmp = textToSpeechService.updateExistingVoiceFile(file.getBytes(),empName,empId);
+            Optional<Employee> employee = employeeRepository.findById(empId);
+            if (!employee.isEmpty()) {
+                UpdatedEmp = textToSpeechService.updateExistingVoiceFile(file.getBytes(),employee.get());
+            }else{
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -102,7 +108,7 @@ public class EmpPronounceController {
             }
             return new ResponseEntity<>(employee.get(), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -115,7 +121,7 @@ public class EmpPronounceController {
             }
             return new ResponseEntity<>(employee.get(), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
 

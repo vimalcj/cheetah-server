@@ -2,6 +2,7 @@ package com.hackaton.cheetah.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -61,11 +62,15 @@ public class ExcelHelperService {
                         case 5:
                             employee.setCountry(currentCell.getStringCellValue());
                             break;
+                        case 6:
+                            employee.setEmail(currentCell.getStringCellValue());
+                            break;
                         default:
                             break;
                     }
                     cellIdx++;
                 }
+
                 employees.add(employee);
             }
             workbook.close();
