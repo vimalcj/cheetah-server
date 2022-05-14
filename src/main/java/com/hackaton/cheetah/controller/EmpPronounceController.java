@@ -12,10 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 
 
 @RestController
@@ -35,8 +33,7 @@ public class EmpPronounceController {
     @GetMapping("/getAllEmployees")
     public ResponseEntity<List<Employee>> getAllEmployees() {
         try {
-            List<Employee> employeeList = new ArrayList<Employee>();
-            employeeList = employeeRepository.findAll();
+            List<Employee> employeeList = employeeRepository.findAll();
             if (employeeList.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
@@ -50,20 +47,16 @@ public class EmpPronounceController {
     public ResponseEntity<Employee> postVoiceRecord(@RequestBody Employee employee) {
         try {
             textToSpeechService.synthesisToMp3FileAsync(employee);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return new ResponseEntity<Employee>(employee, HttpStatus.OK);
+        return new ResponseEntity<>(employee, HttpStatus.OK);
     }
 
 
     @PostMapping( value="/admin/upload",consumes = "multipart/form-data")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
-        String message = "";
+        String message;
         if (ExcelHelperService.hasExcelFormat(file)) {
             try {
                 List<Employee> employeeList =  excelFileService.readFile(file);
@@ -97,17 +90,17 @@ public class EmpPronounceController {
         }catch (Exception e) {
             e.printStackTrace();
         }
-        return new ResponseEntity<Employee>(UpdatedEmp, HttpStatus.OK);
+        return new ResponseEntity<>(UpdatedEmp, HttpStatus.OK);
     }
 
     @GetMapping("/search/{empId}")
     public ResponseEntity<Employee> findByEmployeeId(@PathVariable("empId") Long empId) {
         try {
             Optional<Employee> employee = employeeRepository.findById(empId);
-            if (!employee.isPresent()) {
+            if (employee.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            return new ResponseEntity<Employee>(employee.get(), HttpStatus.OK);
+            return new ResponseEntity<>(employee.get(), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -117,10 +110,10 @@ public class EmpPronounceController {
     public ResponseEntity<Employee> findByEmployeeName(@PathVariable("empName") String empName) {
         try {
             Optional<Employee> employee = employeeRepository.findByEmpName(empName);
-            if (!employee.isPresent()) {
+            if (employee.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            return new ResponseEntity<Employee>(employee.get(), HttpStatus.OK);
+            return new ResponseEntity<>(employee.get(), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

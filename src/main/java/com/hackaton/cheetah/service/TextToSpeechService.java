@@ -9,7 +9,6 @@ import com.hackaton.cheetah.repository.EmployeeRepository;
 import com.microsoft.cognitiveservices.speech.*;
 import com.microsoft.cognitiveservices.speech.audio.AudioConfig;
 import com.microsoft.cognitiveservices.speech.audio.AudioOutputStream;
-import com.microsoft.cognitiveservices.speech.audio.PullAudioOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -22,6 +21,7 @@ import java.nio.file.Paths;
 import java.util.concurrent.ExecutionException;
 
 @Service
+@Slf4j
 public class TextToSpeechService {
 
     @Autowired
@@ -88,9 +88,8 @@ public class TextToSpeechService {
 
 
         synthesizer.close();
-        //fileOutput.close();
-        streamOutput.close();;
-       // Files.delete(path);
+        fileOutput.close();
+        Files.delete(path);
 
     }
 
