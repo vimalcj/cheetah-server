@@ -29,7 +29,7 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<User> login(@RequestBody @Valid LoginRequest loginRequest) {
-        Optional<Employee> byEmpNameAndPassword = employeeRepository.findByEmpIdAndPassword(loginRequest.getUsername(), loginRequest.getPassword());
+        Optional<Employee> byEmpNameAndPassword = employeeRepository.findByUIDAndPassword(loginRequest.getUsername(), loginRequest.getPassword());
 
         log.info("Login called {}", loginRequest);
         if (byEmpNameAndPassword.isEmpty()) {

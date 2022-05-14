@@ -3,18 +3,15 @@ package com.hackaton.cheetah.service;
 import com.azure.storage.file.share.ShareDirectoryClient;
 import com.azure.storage.file.share.ShareFileClient;
 import com.azure.storage.file.share.ShareFileClientBuilder;
-import com.azure.storage.file.share.ShareServiceVersion;
 import com.hackaton.cheetah.model.Employee;
 import com.hackaton.cheetah.repository.EmployeeRepository;
 import com.microsoft.cognitiveservices.speech.*;
 import com.microsoft.cognitiveservices.speech.audio.AudioConfig;
-import com.microsoft.cognitiveservices.speech.audio.AudioOutputStream;
 import com.microsoft.cognitiveservices.speech.audio.PullAudioOutputStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -22,7 +19,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
-import java.util.concurrent.ExecutionException;
 
 @Service
 @Slf4j
@@ -31,14 +27,14 @@ public class TextToSpeechService {
     @Autowired
     EmployeeRepository employeeRepository;
 
-    private static String SubscriptionKey = "9854d01d417c4d99bd730d7aa799478e";
+    private static final String SubscriptionKey = "9854d01d417c4d99bd730d7aa799478e";
 
-    private static String ServiceRegion = "eastus";
+    private static final String ServiceRegion = "eastus";
 
-    private String signaturePolicy = "?sv=2020-10-02&ss=btqf&srt=sco&st=2022-05-14T11%3A37%3A43Z&se=2022-05-15T11%3A37%3A43Z&sp=rwdxlcup&sig=qcyzPuJoo%2BQIxj7SnrRTJANocvqyc6MTb6lVGw1kvj0%3D";
+    private final String signaturePolicy = "?sv=2020-10-02&ss=btqf&srt=sco&st=2022-05-14T11%3A37%3A43Z&se=2022-05-15T11%3A37%3A43Z&sp=rwdxlcup&sig=qcyzPuJoo%2BQIxj7SnrRTJANocvqyc6MTb6lVGw1kvj0%3D";
 
     // Speech synthesis to MP3 file.
-    public void synthesisToMp3FileAsync(Employee employee) throws InterruptedException, ExecutionException {
+    public void synthesisToMp3FileAsync(Employee employee) {
         try {
             log.info("setting tmp directory to: " + System.getProperty("user.dir"));
             System.setProperty("java.io.tmpdir", System.getProperty("user.dir"));
