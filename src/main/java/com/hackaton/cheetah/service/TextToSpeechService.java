@@ -39,55 +39,60 @@ public class TextToSpeechService {
 
     // Speech synthesis to MP3 file.
     public void synthesisToMp3FileAsync(Employee employee) throws InterruptedException, ExecutionException {
-        System.setProperty("java.io.tmpdir", ".");
-        SpeechConfig config = SpeechConfig.fromSubscription(SubscriptionKey, ServiceRegion);
+        try {
+            log.info("setting tmp directory to: " + System.getProperty("user.dir"));
+            System.setProperty("java.io.tmpdir", System.getProperty("user.dir"));
+            SpeechConfig config = SpeechConfig.fromSubscription(SubscriptionKey, ServiceRegion);
 
-        // https://docs.microsoft.com/azure/cognitive-services/speech-service/language-support
-        if (!ObjectUtils.isEmpty(employee.getCountry()))
-            config.setSpeechSynthesisLanguage(employee.getCountry());
+            // https://docs.microsoft.com/azure/cognitive-services/speech-service/language-support
+            if (!ObjectUtils.isEmpty(employee.getCountry()))
+                config.setSpeechSynthesisLanguage(employee.getCountry());
 
-        PullAudioOutputStream stream = PullAudioOutputStream.create();
+            PullAudioOutputStream stream = PullAudioOutputStream.create();
 
-        config.setSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3);
-        String fileName = employee.getEmpName() + "-" + employee.getEmpId() + ".mp3";
+            config.setSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3);
+            String fileName = employee.getEmpName() + "-" + employee.getEmpId() + ".mp3";
 
 
-        //AudioConfig fileOutput = AudioConfig.fromWavFileOutput(fileName);
-        AudioConfig streamOutput = AudioConfig.fromStreamOutput(stream);
+            //AudioConfig fileOutput = AudioConfig.fromWavFileOutput(fileName);
+            AudioConfig streamOutput = AudioConfig.fromStreamOutput(stream);
 
-        // Creates a speech synthesizer using an mp3 file as audio output.
-        SpeechSynthesizer synthesizer = new SpeechSynthesizer(config, streamOutput);
+            // Creates a speech synthesizer using an mp3 file as audio output.
+            SpeechSynthesizer synthesizer = new SpeechSynthesizer(config, streamOutput);
 
-        String text = employee.getEmpName();
-        SpeechSynthesisResult result = synthesizer.SpeakTextAsync(text).get();
-        if (result.getReason() == ResultReason.SynthesizingAudioCompleted) {
-            System.out.println("Speech synthesized for text [" + text + "], and the audio was saved to [" + fileName + "]");
-            //   result.getAudioData();
-            byte[] bytes = result.getAudioData();
-            // Files.write(path, bytes);
-            String upLoadPath = uploadFileToCloud(fileName, bytes);
-            upLoadPath = upLoadPath + signaturePolicy;
-            employee.setRecordUrl(upLoadPath);
-            employee.setCreatedDate(new Timestamp(System.currentTimeMillis()));
-            employee.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
-            employeeRepository.save(employee);
-        } else if (result.getReason() == ResultReason.Canceled) {
-            SpeechSynthesisCancellationDetails cancellation = SpeechSynthesisCancellationDetails.fromResult(result);
-            System.out.println("CANCELED: Reason=" + cancellation.getReason());
+            String text = employee.getEmpName();
+            SpeechSynthesisResult result = synthesizer.SpeakTextAsync(text).get();
+            if (result.getReason() == ResultReason.SynthesizingAudioCompleted) {
+                log.info("Speech synthesized for text [" + text + "], and the audio was saved to [" + fileName + "]");
+                //   result.getAudioData();
+                byte[] bytes = result.getAudioData();
+                // Files.write(path, bytes);
+                String upLoadPath = uploadFileToCloud(fileName, bytes);
+                upLoadPath = upLoadPath + signaturePolicy;
+                employee.setRecordUrl(upLoadPath);
+                employee.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+                employee.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
+                employeeRepository.save(employee);
+            } else if (result.getReason() == ResultReason.Canceled) {
+                SpeechSynthesisCancellationDetails cancellation = SpeechSynthesisCancellationDetails.fromResult(result);
+                log.info("CANCELED: Reason=" + cancellation.getReason());
 
-            if (cancellation.getReason() == CancellationReason.Error) {
-                System.out.println("CANCELED: ErrorCode=" + cancellation.getErrorCode());
-                System.out.println("CANCELED: ErrorDetails=" + cancellation.getErrorDetails());
-                System.out.println("CANCELED: Did you update the subscription info?");
+                if (cancellation.getReason() == CancellationReason.Error) {
+                    log.info("CANCELED: ErrorCode=" + cancellation.getErrorCode());
+                    log.info("CANCELED: ErrorDetails=" + cancellation.getErrorDetails());
+                    log.info("CANCELED: Did you update the subscription info?");
+                }
+
+                result.close();
             }
 
-            result.close();
+            synthesizer.close();
+            //  fileOutput.close()
+            //Files.delete(path)
+            streamOutput.close();
+        } catch (Exception e) {
+            log.error("error in synthesisToMp3FileAsync function", e);
         }
-
-        synthesizer.close();
-        //  fileOutput.close();
-        //Files.delete(path);
-        streamOutput.close();
     }
 
     public String uploadFileToCloud(String fileName, byte[] bytes) {
@@ -99,7 +104,7 @@ public class TextToSpeechService {
                     .resourcePath("test")
                     .buildDirectoryClient();
 
-            System.out.println("uploadFile fileNmae: " + fileName);
+            log.info("uploadFile fileNmae: " + fileName);
             //ShareFileClient fileClient = dirClient.getFileClient(fileName);
 
             ShareFileClient fileClient = dirClient.createFile(fileName, bytes.length);
@@ -108,7 +113,7 @@ public class TextToSpeechService {
             fileClient.upload(bis, bytes.length);
             return filepath + fileName;
         } catch (Exception e) {
-            System.out.println("uploadFile exception: " + e.getMessage());
+            log.error("uploadFile exception: " + e.getMessage());
             return "";
         }
     }
