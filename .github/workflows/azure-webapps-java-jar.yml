@@ -22,7 +22,10 @@ jobs:
           java-version: '11'
 
       - name: Build with Gradle
-        run: gradle clean build
+        run: |
+          gradle clean build
+          pwd
+          ls -ltr ./build/libs
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
