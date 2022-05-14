@@ -15,9 +15,6 @@ import org.springframework.util.ObjectUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.Timestamp;
 
 @Service
@@ -113,17 +110,13 @@ public class TextToSpeechService {
     }
 
 
-    public Employee updateExistingVoiceFile(byte[] bytes, Employee employee) throws IOException {
+    public Employee updateExistingVoiceFile(byte[] bytes, Employee employee) {
         String fileName = employee.getEmpName() + "-" + employee.getEmpId() + ".mp3";
-        Path path = Paths.get(fileName);
-        Files.write(path, bytes);
-        // String upLoadPath = uploadFileToCloud(path.toFile().getAbsolutePath(),fileName);
         String upLoadPath = uploadFileToCloud(fileName, bytes);
         upLoadPath = upLoadPath + signaturePolicy;
         employee.setRecordUrl(upLoadPath);
         employee.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
         employeeRepository.save(employee);
-        Files.delete(path);
         return employee;
     }
 
