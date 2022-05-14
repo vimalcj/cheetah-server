@@ -9,6 +9,7 @@ import com.hackaton.cheetah.repository.EmployeeRepository;
 import com.microsoft.cognitiveservices.speech.*;
 import com.microsoft.cognitiveservices.speech.audio.AudioConfig;
 import com.microsoft.cognitiveservices.speech.audio.AudioOutputStream;
+import com.microsoft.cognitiveservices.speech.audio.PullAudioOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -45,14 +46,19 @@ public class TextToSpeechService {
           config.setSpeechSynthesisLanguage(employee.getCountry());
 
 
+        PullAudioOutputStream stream =  PullAudioOutputStream.create();
+
         config.setSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3);
         String fileName = employee.getEmpName()+"-"+employee.getEmpId()+".mp3";
 
 
-         AudioConfig fileOutput = AudioConfig.fromWavFileOutput(fileName);
+         //AudioConfig fileOutput = AudioConfig.fromWavFileOutput(fileName);
+        AudioConfig streamOutput = AudioConfig.fromStreamOutput(stream);
+
         Path path = null;
+
         // Creates a speech synthesizer using an mp3 file as audio output.
-        SpeechSynthesizer synthesizer = new SpeechSynthesizer(config, fileOutput);
+        SpeechSynthesizer synthesizer = new SpeechSynthesizer(config, streamOutput);
 
             String text = employee.getEmpName();
             SpeechSynthesisResult result = synthesizer.SpeakTextAsync(text).get();
@@ -82,8 +88,9 @@ public class TextToSpeechService {
 
 
         synthesizer.close();
-        fileOutput.close();
-        Files.delete(path);
+        //fileOutput.close();
+        streamOutput.close();;
+       // Files.delete(path);
 
     }
 
