@@ -26,6 +26,7 @@ jobs:
           gradle clean build
           pwd
           dir .\build\libs
+          echo $GITHUB_RUN_ATTEMPT
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
