@@ -11,4 +11,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long>{
     Optional<Employee> findByEmpName(String name);
+    Optional<Employee> findByEmpIdAndPassword(Long empId, String password);
 }
