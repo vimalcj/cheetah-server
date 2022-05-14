@@ -54,16 +54,16 @@ public class EmpPronounceController {
     }
 
 
-    @PostMapping(value = "/admin/upload", consumes = "multipart/form-data")
+    @PostMapping( value="/admin/upload",consumes = "multipart/form-data")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         String message;
         if (ExcelHelperService.hasExcelFormat(file)) {
             try {
-                List<Employee> employeeList = excelFileService.readFile(file);
+                List<Employee> employeeList =  excelFileService.readFile(file);
                 if (employeeList.isEmpty()) {
                     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-                } else {
-                    for (Employee employee : employeeList) {
+                }else{
+                    for (Employee employee:employeeList){
                         textToSpeechService.synthesisToMp3FileAsync(employee);
                     }
                 }
@@ -86,8 +86,8 @@ public class EmpPronounceController {
                                                       @RequestParam("file") MultipartFile file) {
         Employee UpdatedEmp = null;
         try {
-            UpdatedEmp = textToSpeechService.updateExistingVoiceFile(file.getBytes(), empName, empId);
-        } catch (Exception e) {
+            UpdatedEmp = textToSpeechService.updateExistingVoiceFile(file.getBytes(),empName,empId);
+        }catch (Exception e) {
             e.printStackTrace();
         }
         return new ResponseEntity<>(UpdatedEmp, HttpStatus.OK);

@@ -42,6 +42,9 @@ public class Employee {
     @Column(name="email")
     private String email;
 
+    @Column(name="country_lang")
+    private String country;
+
     public Employee() {
 
     }

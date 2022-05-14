@@ -53,10 +53,13 @@ public class ExcelHelperService {
                             employee.setRecordUrl(currentCell.getStringCellValue());
                             break;
                         case 3:
-                            employee.setIsAdmin(currentCell.getBooleanCellValue());
+                            employee.setIsAdmin(Boolean.valueOf(currentCell.getStringCellValue()));
                             break;
                         case 4:
-                            employee.setIsActive(currentCell.getBooleanCellValue());
+                            employee.setIsActive(Boolean.valueOf(currentCell.getStringCellValue()));
+                            break;
+                        case 5:
+                            employee.setCountry(currentCell.getStringCellValue());
                             break;
                         default:
                             break;

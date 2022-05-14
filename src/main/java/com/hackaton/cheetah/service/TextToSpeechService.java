@@ -3,13 +3,18 @@ package com.hackaton.cheetah.service;
 import com.azure.storage.file.share.ShareDirectoryClient;
 import com.azure.storage.file.share.ShareFileClient;
 import com.azure.storage.file.share.ShareFileClientBuilder;
+import com.azure.storage.file.share.ShareServiceVersion;
 import com.azure.storage.file.share.models.ShareFileUploadInfo;
 import com.hackaton.cheetah.model.Employee;
 import com.hackaton.cheetah.repository.EmployeeRepository;
 import com.microsoft.cognitiveservices.speech.*;
 import lombok.extern.slf4j.Slf4j;
+import com.microsoft.cognitiveservices.speech.audio.AudioConfig;
+import com.microsoft.cognitiveservices.speech.audio.AudioOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -29,9 +34,16 @@ public class TextToSpeechService {
 
     private static final String ServiceRegion = "eastus";
 
+    private String signaturePolicy ="?sv=2020-10-02&ss=btqf&srt=sco&st=2022-05-14T11%3A37%3A43Z&se=2022-05-15T11%3A37%3A43Z&sp=rwdxlcup&sig=qcyzPuJoo%2BQIxj7SnrRTJANocvqyc6MTb6lVGw1kvj0%3D";
+
     // Speech synthesis to MP3 file.
-    public void synthesisToMp3FileAsync(Employee employee) throws InterruptedException, ExecutionException {
+    public void synthesisToMp3FileAsync(Employee employee) throws InterruptedException, ExecutionException 
+    {
         SpeechConfig config = SpeechConfig.fromSubscription(SubscriptionKey, ServiceRegion);
+
+        if(!StringUtils.isEmpty(employee.getCountry()))
+            config.setSpeechSynthesisLanguage(employee.getCountry());
+
         config.setSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3);
         String fileName = employee.getEmpName() + "-" + employee.getEmpId() + ".mp3";
         // Creates a speech synthesizer using an mp3 file as audio output.
@@ -65,9 +77,12 @@ public class TextToSpeechService {
     }
 
 
-    public String uploadFileToCloud(String path, String fileName) {
-        String filepath = "https://sqlvahil7754uizsa4.file.core.windows.net/emp-pronounce/test/";
-        try {
+  /*  public String uploadFileToCloud( String path,String fileName)
+    {
+        ByteArrayInputStream bis = new ByteArrayInputStream(source);
+        String filepath ="https://sqlvahil7754uizsa4.file.core.windows.net/emp-pronounce/test/";
+        try
+        {
             ShareDirectoryClient dirClient = new ShareFileClientBuilder()
                     .connectionString("DefaultEndpointsProtocol=https;AccountName=sqlvahil7754uizsa4;AccountKey=R6fRuYbXcdDo9TC6pXb86b4nwnvNnWNhPgIDdTSFrUITRpnnRdr6XeFFeyUNlg4kni8PcdFtjwnT+AStF0X0Gg==;BlobEndpoint=https://sqlvahil7754uizsa4.blob.core.windows.net/;QueueEndpoint=https://sqlvahil7754uizsa4.queue.core.windows.net/;TableEndpoint=https://sqlvahil7754uizsa4.table.core.windows.net/;FileEndpoint=https://sqlvahil7754uizsa4.file.core.windows.net/;").shareName("emp-pronounce")
                     .resourcePath("test")
@@ -75,7 +90,7 @@ public class TextToSpeechService {
 
             System.out.println("uploadFile fileNmae: " + fileName);
             ShareFileClient fileClient = dirClient.getFileClient(fileName);
-            fileClient.create(1024000);
+            //fileClient.create(1024000);
             fileClient.uploadFromFile(fileName);
             return filepath + fileName;
         } catch (Exception e) {
@@ -85,14 +100,15 @@ public class TextToSpeechService {
     }
 
 
-    public Employee updateExistingVoiceFile(byte[] bytes, String empName, Long empId) throws IOException {
-        String fileName = empName + "-" + empId + ".mp3";
+    public Employee updateExistingVoiceFile(byte[] bytes ,String empName,Long empId) throws  IOException{
+        String fileName = empName+"-"+empId+".mp3";
         Path path = Paths.get(fileName);
         Files.write(path, bytes);
-        //String upLoadPath = uploadFileToCloud(path.toFile().getAbsolutePath(), fileName);
-        String upLoadPath = uploadFileToCloud(bytes, fileName);
-        Employee employee = new Employee(empId, empName, false, true, upLoadPath);
-        // employee.setRecordUrl(upLoadPath);
+       // String upLoadPath = uploadFileToCloud(path.toFile().getAbsolutePath(),fileName);
+        String upLoadPath = uploadFileToCloud(fileName,bytes);
+        upLoadPath = upLoadPath +signaturePolicy;
+        Employee employee = new Employee(empId,empName,false,true,upLoadPath);
+       // employee.setRecordUrl(upLoadPath);
         employeeRepository.save(employee);
         Files.delete(path);
         return employee;
