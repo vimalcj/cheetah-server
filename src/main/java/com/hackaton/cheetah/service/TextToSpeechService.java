@@ -9,6 +9,8 @@ import com.hackaton.cheetah.repository.EmployeeRepository;
 import com.microsoft.cognitiveservices.speech.*;
 import com.microsoft.cognitiveservices.speech.audio.AudioConfig;
 import com.microsoft.cognitiveservices.speech.audio.AudioOutputStream;
+import com.microsoft.cognitiveservices.speech.audio.PullAudioOutputStream;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -46,7 +48,7 @@ public class TextToSpeechService {
           config.setSpeechSynthesisLanguage(employee.getCountry());
 
 
-        PullAudioOutputStream stream =  PullAudioOutputStream.create();
+        PullAudioOutputStream stream = PullAudioOutputStream.create();
 
         config.setSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3);
         String fileName = employee.getEmpName()+"-"+employee.getEmpId()+".mp3";
@@ -88,8 +90,9 @@ public class TextToSpeechService {
 
 
         synthesizer.close();
-        fileOutput.close();
-        Files.delete(path);
+      //  fileOutput.close();
+        //Files.delete(path);
+        streamOutput.close();;
 
     }
 
