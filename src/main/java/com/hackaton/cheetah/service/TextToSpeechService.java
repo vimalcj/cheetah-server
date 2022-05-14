@@ -11,6 +11,7 @@ import com.microsoft.cognitiveservices.speech.audio.AudioConfig;
 import com.microsoft.cognitiveservices.speech.audio.AudioOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -29,6 +30,8 @@ public class TextToSpeechService {
 
     private static String ServiceRegion = "eastus";
 
+    private String signaturePolicy ="?sv=2020-10-02&ss=btqf&srt=sco&st=2022-05-14T11%3A37%3A43Z&se=2022-05-15T11%3A37%3A43Z&sp=rwdxlcup&sig=qcyzPuJoo%2BQIxj7SnrRTJANocvqyc6MTb6lVGw1kvj0%3D";
+
     // Speech synthesis to MP3 file.
     public void synthesisToMp3FileAsync(Employee employee) throws InterruptedException, ExecutionException, IOException
     {
@@ -36,12 +39,15 @@ public class TextToSpeechService {
         // Sets the synthesis language.
         // The full list of supported language can be found here:
         // https://docs.microsoft.com/azure/cognitive-services/speech-service/language-support
-        /*String language = "de-DE";
-        config.setSpeechSynthesisLanguage(language);*/
+        /*String language = "de-DE";*/
+
+        if(!StringUtils.isEmpty(employee.getCountry()))
+          config.setSpeechSynthesisLanguage(employee.getCountry());
 
 
         config.setSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3);
         String fileName = employee.getEmpName()+"-"+employee.getEmpId()+".mp3";
+
 
          AudioConfig fileOutput = AudioConfig.fromWavFileOutput(fileName);
         Path path = null;
@@ -57,6 +63,7 @@ public class TextToSpeechService {
                 path = Paths.get(fileName);
                // Files.write(path, bytes);
                 String upLoadPath = uploadFileToCloud(fileName,bytes);
+                upLoadPath = upLoadPath +signaturePolicy;
                 employee.setRecordUrl(upLoadPath);
                 employeeRepository.save(employee);
             }
@@ -141,6 +148,7 @@ public class TextToSpeechService {
         Files.write(path, bytes);
        // String upLoadPath = uploadFileToCloud(path.toFile().getAbsolutePath(),fileName);
         String upLoadPath = uploadFileToCloud(fileName,bytes);
+        upLoadPath = upLoadPath +signaturePolicy;
         Employee employee = new Employee(empId,empName,false,true,upLoadPath);
        // employee.setRecordUrl(upLoadPath);
         employeeRepository.save(employee);

@@ -58,6 +58,9 @@ public class ExcelHelperService {
                         case 4:
                             employee.setIsActive(Boolean.valueOf(currentCell.getStringCellValue()));
                             break;
+                        case 5:
+                            employee.setCountry(currentCell.getStringCellValue());
+                            break;
                         default:
                             break;
                     }
