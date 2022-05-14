@@ -36,8 +36,6 @@ public class TextToSpeechService {
     // Speech synthesis to MP3 file.
     public void synthesisToMp3FileAsync(Employee employee) {
         try {
-            log.info("setting tmp directory to: " + System.getProperty("user.dir"));
-            System.setProperty("java.io.tmpdir", System.getProperty("user.dir"));
             SpeechConfig config = SpeechConfig.fromSubscription(SubscriptionKey, ServiceRegion);
 
             // https://docs.microsoft.com/azure/cognitive-services/speech-service/language-support
