@@ -112,13 +112,13 @@ public class EmpPronounceController {
     }
 
     @GetMapping("/search/employee/{empName}")
-    public ResponseEntity<Employee> findByEmployeeName(@PathVariable("empName") String empName) {
+    public ResponseEntity<List<Employee>> findByEmployeeName(@PathVariable("empName") String empName) {
         try {
-            Optional<Employee> employee = employeeRepository.findByEmpName(empName);
-            if (employee.isEmpty()) {
+            List<Employee> employeeList = employeeRepository.findByEmpName(empName);
+            if (employeeList.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            return new ResponseEntity<>(employee.get(), HttpStatus.OK);
+            return new ResponseEntity<>(employeeList, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
