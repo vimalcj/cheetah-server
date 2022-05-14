@@ -61,7 +61,7 @@ public class EmpPronounceController {
     }
 
 
-    @PostMapping( value="/admin/upload", consumes = "multipart/form-data")
+    @PostMapping( value="/admin/upload",consumes = "multipart/form-data")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         String message = "";
         if (ExcelHelperService.hasExcelFormat(file)) {
