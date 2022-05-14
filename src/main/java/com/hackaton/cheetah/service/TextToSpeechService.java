@@ -13,6 +13,7 @@ import com.microsoft.cognitiveservices.speech.audio.PullAudioOutputStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
@@ -37,11 +38,12 @@ public class TextToSpeechService {
     private String signaturePolicy = "?sv=2020-10-02&ss=btqf&srt=sco&st=2022-05-14T11%3A37%3A43Z&se=2022-05-15T11%3A37%3A43Z&sp=rwdxlcup&sig=qcyzPuJoo%2BQIxj7SnrRTJANocvqyc6MTb6lVGw1kvj0%3D";
 
     // Speech synthesis to MP3 file.
-    public void synthesisToMp3FileAsync(Employee employee) throws InterruptedException, ExecutionException, IOException {
+    public void synthesisToMp3FileAsync(Employee employee) throws InterruptedException, ExecutionException {
+        System.setProperty("java.io.tmpdir", ".");
         SpeechConfig config = SpeechConfig.fromSubscription(SubscriptionKey, ServiceRegion);
 
         // https://docs.microsoft.com/azure/cognitive-services/speech-service/language-support
-        if (!StringUtils.isEmpty(employee.getCountry()))
+        if (!ObjectUtils.isEmpty(employee.getCountry()))
             config.setSpeechSynthesisLanguage(employee.getCountry());
 
         PullAudioOutputStream stream = PullAudioOutputStream.create();
@@ -53,8 +55,6 @@ public class TextToSpeechService {
         //AudioConfig fileOutput = AudioConfig.fromWavFileOutput(fileName);
         AudioConfig streamOutput = AudioConfig.fromStreamOutput(stream);
 
-        Path path = null;
-
         // Creates a speech synthesizer using an mp3 file as audio output.
         SpeechSynthesizer synthesizer = new SpeechSynthesizer(config, streamOutput);
 
@@ -64,7 +64,6 @@ public class TextToSpeechService {
             System.out.println("Speech synthesized for text [" + text + "], and the audio was saved to [" + fileName + "]");
             //   result.getAudioData();
             byte[] bytes = result.getAudioData();
-            path = Paths.get(fileName);
             // Files.write(path, bytes);
             String upLoadPath = uploadFileToCloud(fileName, bytes);
             upLoadPath = upLoadPath + signaturePolicy;
@@ -89,7 +88,6 @@ public class TextToSpeechService {
         //  fileOutput.close();
         //Files.delete(path);
         streamOutput.close();
-        ;
     }
 
     public String uploadFileToCloud(String fileName, byte[] bytes) {
@@ -117,7 +115,7 @@ public class TextToSpeechService {
 
 
     public Employee updateExistingVoiceFile(byte[] bytes, Employee employee) throws IOException {
-        String fileName = employee.getEmpName()+ "-" + employee.getEmpId() + ".mp3";
+        String fileName = employee.getEmpName() + "-" + employee.getEmpId() + ".mp3";
         Path path = Paths.get(fileName);
         Files.write(path, bytes);
         // String upLoadPath = uploadFileToCloud(path.toFile().getAbsolutePath(),fileName);
