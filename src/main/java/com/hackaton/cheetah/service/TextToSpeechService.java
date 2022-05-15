@@ -38,25 +38,20 @@ public class TextToSpeechService {
             if (!ObjectUtils.isEmpty(employee.getCountry()))
                 config.setSpeechSynthesisLanguage(employee.getCountry());
 
-            PullAudioOutputStream stream = PullAudioOutputStream.create();
+                config.setSpeechSynthesisVoiceName("te-IN-MohanNeural");//Telugu male
 
+            PullAudioOutputStream stream = PullAudioOutputStream.create();
             config.setSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3);
             String fileName = employee.getEmpName() + "-" + employee.getEmpId() + ".mp3";
 
-
-            //AudioConfig fileOutput = AudioConfig.fromWavFileOutput(fileName);
             AudioConfig streamOutput = AudioConfig.fromStreamOutput(stream);
-
-            // Creates a speech synthesizer using an mp3 file as audio output.
             SpeechSynthesizer synthesizer = new SpeechSynthesizer(config, streamOutput);
 
             String text = employee.getEmpName();
             SpeechSynthesisResult result = synthesizer.SpeakTextAsync(text).get();
             if (result.getReason() == ResultReason.SynthesizingAudioCompleted) {
                 log.info("Speech synthesized for text [" + text + "], and the audio was saved to [" + fileName + "]");
-                //   result.getAudioData();
                 byte[] bytes = result.getAudioData();
-                // Files.write(path, bytes);
                 String upLoadPath = uploadFileToCloud(fileName, bytes);
                 upLoadPath = upLoadPath + signaturePolicy;
                 employee.setRecordUrl(upLoadPath);
@@ -78,8 +73,6 @@ public class TextToSpeechService {
             }
 
             synthesizer.close();
-            //  fileOutput.close()
-            //Files.delete(path)
             streamOutput.close();
             return employee;
         } catch (Exception e) {
@@ -99,11 +92,7 @@ public class TextToSpeechService {
                     .buildDirectoryClient();
 
             log.info("uploadFile fileName: " + fileName);
-            //ShareFileClient fileClient = dirClient.getFileClient(fileName);
-
             ShareFileClient fileClient = dirClient.createFile(fileName, bytes.length);
-
-            //fileClient.create(1024000);
             fileClient.upload(bis, bytes.length);
             return filepath + fileName;
         } catch (Exception e) {
