@@ -10,6 +10,7 @@ import com.microsoft.cognitiveservices.speech.audio.AudioConfig;
 import com.microsoft.cognitiveservices.speech.audio.PullAudioOutputStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -27,8 +28,6 @@ public class TextToSpeechService {
 
     private static final String ServiceRegion = "eastus";
 
-    private final String signaturePolicy = "?sv=2021-04-10&st=2022-05-15T12%3A04%3A33Z&se=2022-06-24T12%3A04%3A00Z&sr=s&sp=rl&sig=os3D0JS8N428uhgH1VKJDK%2FdtRah5Fx2O12ALGfBivM%3D";
-
     // Speech synthesis to MP3 file.
     public Employee synthesisToMp3FileAsync(Employee employee) throws Exception {
         try {
@@ -38,7 +37,7 @@ public class TextToSpeechService {
             if (!ObjectUtils.isEmpty(employee.getCountry()))
                 config.setSpeechSynthesisLanguage(employee.getCountry());
 
-                config.setSpeechSynthesisVoiceName("te-IN-MohanNeural");//Telugu male
+            config.setSpeechSynthesisVoiceName("te-IN-MohanNeural");//Telugu male
 
             PullAudioOutputStream stream = PullAudioOutputStream.create();
             config.setSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3);
@@ -53,7 +52,7 @@ public class TextToSpeechService {
                 log.info("Speech synthesized for text [" + text + "], and the audio was saved to [" + fileName + "]");
                 byte[] bytes = result.getAudioData();
                 String upLoadPath = uploadFileToCloud(fileName, bytes);
-                upLoadPath = upLoadPath + signaturePolicy;
+                //upLoadPath = upLoadPath + signaturePolicy;
                 employee.setRecordUrl(upLoadPath);
                 employee.setCreatedDate(new Timestamp(System.currentTimeMillis()));
                 employee.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
@@ -105,7 +104,7 @@ public class TextToSpeechService {
     public Employee updateExistingVoiceFile(byte[] bytes, Employee employee) {
         String fileName = employee.getEmpName() + "-" + employee.getEmpId() + ".mp3";
         String upLoadPath = uploadFileToCloud(fileName, bytes);
-        upLoadPath = upLoadPath + signaturePolicy;
+        //upLoadPath = upLoadPath + signaturePolicy;
         employee.setRecordUrl(upLoadPath);
         employee.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
         return employeeRepository.save(employee);

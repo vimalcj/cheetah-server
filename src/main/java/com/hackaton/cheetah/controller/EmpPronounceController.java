@@ -9,11 +9,14 @@ import com.hackaton.cheetah.service.ExcelService;
 import com.hackaton.cheetah.service.TextToSpeechService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +36,15 @@ public class EmpPronounceController {
     @Autowired
     ExcelService excelFileService;
 
+    @Autowired
+    ConverterUtil converterUtil;
+
+    @Value("${user.defaults.password}")
+    private String defaultPassword;
+
+    @Value("${azure.storage.avatarUrl}")
+    private String defaultAvatar;
+
     @GetMapping("/getAllEmployees")
     public ResponseEntity<List<User>> getAllEmployees() {
         try {
@@ -40,7 +52,7 @@ public class EmpPronounceController {
             if (employeeList.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            return new ResponseEntity<>(ConverterUtil.convertToUser(employeeList), HttpStatus.OK);
+            return new ResponseEntity<>(converterUtil.convertToUser(employeeList), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -51,7 +63,7 @@ public class EmpPronounceController {
         try {
             Optional<Employee> employeeOptional = employeeRepository.findByUID(UID);
             if (employeeOptional.isPresent()) {
-                return new ResponseEntity<>(ConverterUtil.convertToUser(textToSpeechService.synthesisToMp3FileAsync(employeeOptional.get())), HttpStatus.OK);
+                return new ResponseEntity<>(converterUtil.convertToUser(textToSpeechService.synthesisToMp3FileAsync(employeeOptional.get())), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
@@ -59,13 +71,13 @@ public class EmpPronounceController {
             log.error("error while uploading standard audio record...", ex);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 
 
     @PostMapping(value = "/admin/upload", consumes = "multipart/form-data")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         String message;
+        int errorCount = 0;
         if (ExcelHelperService.hasExcelFormat(file)) {
             try {
                 List<Employee> employeeList = excelFileService.readFile(file);
@@ -73,11 +85,21 @@ public class EmpPronounceController {
                     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
                 } else {
                     for (Employee employee : employeeList) {
-                        textToSpeechService.synthesisToMp3FileAsync(employee);
+                        employee.setPassword(defaultPassword);
+                        employee.setImageUrl(defaultAvatar);
+                        try {
+                            textToSpeechService.synthesisToMp3FileAsync(employee);
+                        } catch (DataIntegrityViolationException | SQLException ex) {
+                            errorCount++;
+                        }
                     }
                 }
 
-                message = "Uploaded the file successfully: " + file.getOriginalFilename();
+                if (errorCount == 0) {
+                    message = "Uploaded the file successfully: " + file.getOriginalFilename();
+                } else {
+                    message = String.format("Bulk upload failed for %s out of %s records!!", errorCount, employeeList.size());
+                }
                 return ResponseEntity.status(HttpStatus.OK).body(message);
             } catch (Exception e) {
                 message = "Could not upload the file: " + file.getOriginalFilename() + "!";
@@ -95,7 +117,7 @@ public class EmpPronounceController {
             Optional<Employee> employee = employeeRepository.findByUID(userName);
             if (employee.isPresent()) {
                 Employee UpdatedEmp = textToSpeechService.updateExistingVoiceFile(file.getBytes(), employee.get());
-                return new ResponseEntity<>(ConverterUtil.convertToUser(UpdatedEmp), HttpStatus.OK);
+                return new ResponseEntity<>(converterUtil.convertToUser(UpdatedEmp), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
@@ -112,7 +134,7 @@ public class EmpPronounceController {
             if (employee.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            return new ResponseEntity<>(ConverterUtil.convertToUser(employee.get()), HttpStatus.OK);
+            return new ResponseEntity<>(converterUtil.convertToUser(employee.get()), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -125,7 +147,7 @@ public class EmpPronounceController {
             if (employeeList.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            return new ResponseEntity<>(ConverterUtil.convertToUser(employeeList), HttpStatus.OK);
+            return new ResponseEntity<>(converterUtil.convertToUser(employeeList), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
