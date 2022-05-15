@@ -34,15 +34,15 @@ public class EmpPronounceController {
     ExcelService excelFileService;
 
     @GetMapping("/getAllEmployees")
-    public ResponseEntity<List<Employee>> getAllEmployees() {
+    public ResponseEntity<List<User>> getAllEmployees() {
         try {
             List<Employee> employeeList = employeeRepository.findAll();
             if (employeeList.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            return new ResponseEntity<>(employeeList, HttpStatus.OK);
+            return new ResponseEntity<>(ConverterUtil.convertToUser(employeeList), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -106,26 +106,26 @@ public class EmpPronounceController {
     }
 
     @GetMapping("/search/{empId}")
-    public ResponseEntity<Employee> findByEmployeeId(@PathVariable("empId") String UID) {
+    public ResponseEntity<User> findByEmployeeId(@PathVariable("empId") String UID) {
         try {
             Optional<Employee> employee = employeeRepository.findByUID(UID);
             if (employee.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            return new ResponseEntity<>(employee.get(), HttpStatus.OK);
+            return new ResponseEntity<>(ConverterUtil.convertToUser(employee.get()), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("/search/employee/{empName}")
-    public ResponseEntity<List<Employee>> findByEmployeeName(@PathVariable("empName") String empName) {
+    public ResponseEntity<List<User>> findByEmployeeName(@PathVariable("empName") String empName) {
         try {
             List<Employee> employeeList = employeeRepository.findByEmpName(empName);
             if (employeeList.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            return new ResponseEntity<>(employeeList, HttpStatus.OK);
+            return new ResponseEntity<>(ConverterUtil.convertToUser(employeeList), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }

@@ -3,6 +3,8 @@ package com.hackaton.cheetah.model;
 import lombok.Builder;
 import lombok.Data;
 
+import java.sql.Timestamp;
+
 @Data
 @Builder
 public class User {
@@ -14,4 +16,6 @@ public class User {
     private String email;
     private String imageUrl;
     private Long empId;
+    private Timestamp createdTs;
+    private Timestamp modifiedTs;
 }
