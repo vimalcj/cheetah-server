@@ -1,5 +1,6 @@
 package com.hackaton.cheetah.controller;
 
+import com.hackaton.cheetah.converter.ConverterUtil;
 import com.hackaton.cheetah.model.Employee;
 import com.hackaton.cheetah.model.LoginRequest;
 import com.hackaton.cheetah.model.User;
@@ -37,12 +38,7 @@ public class LoginController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         Employee employee = byEmpNameAndPassword.get();
-        User user = User.builder().userId(employee.getEmpId())
-                .name(employee.getEmpName())
-                .admin(employee.getIsAdmin())
-                .email(employee.getEmail())
-                .imageUrl(employee.getImageUrl())
-                .recordUrl(employee.getRecordUrl()).build();
+        User user = ConverterUtil.convertToUser(employee);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }

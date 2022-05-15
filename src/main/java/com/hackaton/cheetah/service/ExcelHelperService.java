@@ -14,22 +14,22 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
+
 public class ExcelHelperService {
     public static String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     //static String[] HEADERs = { "EmpId", "EmpName", "Voice URL", "isAdmin","isActive" };
     static String SHEET = "Employees";
+
     public static boolean hasExcelFormat(MultipartFile file) {
-        if (!TYPE.equals(file.getContentType())) {
-            return false;
-        }
-        return true;
+        return TYPE.equals(file.getContentType());
     }
+
     public static List<Employee> excelToEmployees(InputStream is) {
         try {
             Workbook workbook = new XSSFWorkbook(is);
             Sheet sheet = workbook.getSheetAt(0);
             Iterator<Row> rows = sheet.iterator();
-            List<Employee> employees = new ArrayList<Employee>();
+            List<Employee> employees = new ArrayList<>();
             int rowNumber = 0;
             while (rows.hasNext()) {
                 Row currentRow = rows.next();
@@ -64,6 +64,9 @@ public class ExcelHelperService {
                             break;
                         case 6:
                             employee.setEmail(currentCell.getStringCellValue());
+                            break;
+                        case 7:
+                            employee.setUID(currentCell.getStringCellValue());
                             break;
                         default:
                             break;

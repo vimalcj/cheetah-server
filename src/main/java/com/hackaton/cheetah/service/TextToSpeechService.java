@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.sql.Timestamp;
 
 @Service
@@ -31,7 +30,7 @@ public class TextToSpeechService {
     private final String signaturePolicy = "?sv=2020-10-02&ss=btqf&srt=sco&st=2022-05-14T11%3A37%3A43Z&se=2022-05-15T11%3A37%3A43Z&sp=rwdxlcup&sig=qcyzPuJoo%2BQIxj7SnrRTJANocvqyc6MTb6lVGw1kvj0%3D";
 
     // Speech synthesis to MP3 file.
-    public void synthesisToMp3FileAsync(Employee employee) {
+    public Employee synthesisToMp3FileAsync(Employee employee) throws Exception {
         try {
             SpeechConfig config = SpeechConfig.fromSubscription(SubscriptionKey, ServiceRegion);
 
@@ -63,7 +62,7 @@ public class TextToSpeechService {
                 employee.setRecordUrl(upLoadPath);
                 employee.setCreatedDate(new Timestamp(System.currentTimeMillis()));
                 employee.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
-                employeeRepository.save(employee);
+                employee = employeeRepository.save(employee);
             } else if (result.getReason() == ResultReason.Canceled) {
                 SpeechSynthesisCancellationDetails cancellation = SpeechSynthesisCancellationDetails.fromResult(result);
                 log.info("CANCELED: Reason=" + cancellation.getReason());
@@ -75,15 +74,19 @@ public class TextToSpeechService {
                 }
 
                 result.close();
+                throw new Exception("error while generating audio from text reason: " + result.getReason());
             }
 
             synthesizer.close();
             //  fileOutput.close()
             //Files.delete(path)
             streamOutput.close();
+            return employee;
         } catch (Exception e) {
             log.error("error in synthesisToMp3FileAsync function", e);
+            throw e;
         }
+
     }
 
     public String uploadFileToCloud(String fileName, byte[] bytes) {
@@ -95,7 +98,7 @@ public class TextToSpeechService {
                     .resourcePath("test")
                     .buildDirectoryClient();
 
-            log.info("uploadFile fileNmae: " + fileName);
+            log.info("uploadFile fileName: " + fileName);
             //ShareFileClient fileClient = dirClient.getFileClient(fileName);
 
             ShareFileClient fileClient = dirClient.createFile(fileName, bytes.length);
@@ -116,8 +119,7 @@ public class TextToSpeechService {
         upLoadPath = upLoadPath + signaturePolicy;
         employee.setRecordUrl(upLoadPath);
         employee.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
-        employeeRepository.save(employee);
-        return employee;
+        return employeeRepository.save(employee);
     }
 
 }

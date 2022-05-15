@@ -1,6 +1,8 @@
 package com.hackaton.cheetah.controller;
 
+import com.hackaton.cheetah.converter.ConverterUtil;
 import com.hackaton.cheetah.model.Employee;
+import com.hackaton.cheetah.model.User;
 import com.hackaton.cheetah.repository.EmployeeRepository;
 import com.hackaton.cheetah.service.ExcelHelperService;
 import com.hackaton.cheetah.service.ExcelService;
@@ -45,26 +47,32 @@ public class EmpPronounceController {
     }
 
     @PostMapping("/standard/record")
-    public ResponseEntity<Employee> postVoiceRecord(@RequestBody Employee employee) {
+    public ResponseEntity<User> postVoiceRecord(@RequestParam("userName") String UID) {
         try {
-            textToSpeechService.synthesisToMp3FileAsync(employee);
-        } catch (Exception e) {
-            e.printStackTrace();
+            Optional<Employee> employeeOptional = employeeRepository.findByUID(UID);
+            if (employeeOptional.isPresent()) {
+                return new ResponseEntity<>(ConverterUtil.convertToUser(textToSpeechService.synthesisToMp3FileAsync(employeeOptional.get())), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+        } catch (Exception ex) {
+            log.error("error while uploading standard audio record...", ex);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(employee, HttpStatus.OK);
+
     }
 
 
-    @PostMapping( value="/admin/upload",consumes = "multipart/form-data")
+    @PostMapping(value = "/admin/upload", consumes = "multipart/form-data")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         String message;
         if (ExcelHelperService.hasExcelFormat(file)) {
             try {
-                List<Employee> employeeList =  excelFileService.readFile(file);
+                List<Employee> employeeList = excelFileService.readFile(file);
                 if (employeeList.isEmpty()) {
                     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-                }else{
-                    for (Employee employee:employeeList){
+                } else {
+                    for (Employee employee : employeeList) {
                         textToSpeechService.synthesisToMp3FileAsync(employee);
                     }
                 }
@@ -80,35 +88,33 @@ public class EmpPronounceController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
     }
 
-
     @PostMapping(value = "/record", consumes = "multipart/form-data")
-    public ResponseEntity<Employee> updateVoiceRecord(@RequestParam("empId") Long empId,
-                                                      @RequestParam("file") MultipartFile file) {
-        Employee UpdatedEmp = null;
+    public ResponseEntity<User> updateVoiceRecord(@RequestParam("userName") String userName,
+                                                  @RequestParam("file") MultipartFile file) {
         try {
-            Optional<Employee> employee = employeeRepository.findById(empId);
-            if (!employee.isEmpty()) {
-                UpdatedEmp = textToSpeechService.updateExistingVoiceFile(file.getBytes(),employee.get());
-            }else{
+            Optional<Employee> employee = employeeRepository.findByUID(userName);
+            if (employee.isPresent()) {
+                Employee UpdatedEmp = textToSpeechService.updateExistingVoiceFile(file.getBytes(), employee.get());
+                return new ResponseEntity<>(ConverterUtil.convertToUser(UpdatedEmp), HttpStatus.OK);
+            } else {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-
-        }catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            log.error("error while uploading teh audio file", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(UpdatedEmp, HttpStatus.OK);
     }
 
     @GetMapping("/search/{empId}")
-    public ResponseEntity<Employee> findByEmployeeId(@PathVariable("empId") Long empId) {
+    public ResponseEntity<Employee> findByEmployeeId(@PathVariable("empId") String UID) {
         try {
-            Optional<Employee> employee = employeeRepository.findById(empId);
+            Optional<Employee> employee = employeeRepository.findByUID(UID);
             if (employee.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
             return new ResponseEntity<>(employee.get(), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
