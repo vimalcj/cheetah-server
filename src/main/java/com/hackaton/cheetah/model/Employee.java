@@ -55,16 +55,5 @@ public class Employee {
     private String UID;
 
     public Employee() {
-
     }
-
-
-    public Employee(Long empId, String empName, Boolean isAdmin, Boolean isActive, String recordUrl) {
-        this.empId = empId;
-        this.empName = empName;
-        this.isAdmin = isAdmin;
-        this.isActive = isActive;
-        this.recordUrl = recordUrl;
-    }
-
 }

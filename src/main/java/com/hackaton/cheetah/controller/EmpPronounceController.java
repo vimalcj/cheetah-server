@@ -153,5 +153,10 @@ public class EmpPronounceController {
         }
     }
 
+    @GetMapping("/genericSearch/employee/{searchString}")
+    public List<User> searchEmployees(@PathVariable("searchString") String searchString) {
+        return converterUtil.convertToUser(employeeRepository.employeeGenericSearch(searchString));
+    }
+
 
 }
