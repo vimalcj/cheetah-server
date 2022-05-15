@@ -8,6 +8,7 @@ import com.hackaton.cheetah.service.ExcelHelperService;
 import com.hackaton.cheetah.service.ExcelService;
 import com.hackaton.cheetah.service.TextToSpeechService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -116,7 +117,7 @@ public class EmpPronounceController {
         try {
             Optional<Employee> employee = employeeRepository.findByUID(userName);
             if (employee.isPresent()) {
-                Employee UpdatedEmp = textToSpeechService.updateExistingVoiceFile(file.getBytes(), employee.get());
+                Employee UpdatedEmp = textToSpeechService.updateExistingVoiceFile(file.getBytes(), employee.get(), FilenameUtils.getExtension(file.getOriginalFilename()));
                 return new ResponseEntity<>(converterUtil.convertToUser(UpdatedEmp), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -127,36 +128,34 @@ public class EmpPronounceController {
         }
     }
 
-    @GetMapping("/search/{empId}")
-    public ResponseEntity<User> findByEmployeeId(@PathVariable("empId") String UID) {
-        try {
-            Optional<Employee> employee = employeeRepository.findByUID(UID);
-            if (employee.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            return new ResponseEntity<>(converterUtil.convertToUser(employee.get()), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @GetMapping("/search/employee/{empName}")
-    public ResponseEntity<List<User>> findByEmployeeName(@PathVariable("empName") String empName) {
-        try {
-            List<Employee> employeeList = employeeRepository.findByEmpName(empName);
-            if (employeeList.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            return new ResponseEntity<>(converterUtil.convertToUser(employeeList), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
-    }
+//    @GetMapping("/search/{empId}")
+//    public ResponseEntity<User> findByEmployeeId(@PathVariable("empId") String UID) {
+//        try {
+//            Optional<Employee> employee = employeeRepository.findByUID(UID);
+//            if (employee.isEmpty()) {
+//                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//            }
+//            return new ResponseEntity<>(converterUtil.convertToUser(employee.get()), HttpStatus.OK);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//    }
+//
+//    @GetMapping("/search/employee/{empName}")
+//    public ResponseEntity<List<User>> findByEmployeeName(@PathVariable("empName") String empName) {
+//        try {
+//            List<Employee> employeeList = employeeRepository.findByEmpName(empName);
+//            if (employeeList.isEmpty()) {
+//                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//            }
+//            return new ResponseEntity<>(converterUtil.convertToUser(employeeList), HttpStatus.OK);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+//        }
+//    }
 
     @GetMapping("/genericSearch/employee/{searchString}")
-    public List<User> searchEmployees(@PathVariable("searchString") String searchString) {
-        return converterUtil.convertToUser(employeeRepository.employeeGenericSearch(searchString));
+    public ResponseEntity<List<User>> searchEmployees(@PathVariable("searchString") String searchString) {
+        return new ResponseEntity<>(converterUtil.convertToUser(employeeRepository.employeeGenericSearch(searchString)), HttpStatus.OK);
     }
-
-
 }

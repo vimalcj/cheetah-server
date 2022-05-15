@@ -10,7 +10,6 @@ import com.microsoft.cognitiveservices.speech.audio.AudioConfig;
 import com.microsoft.cognitiveservices.speech.audio.PullAudioOutputStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -101,8 +100,8 @@ public class TextToSpeechService {
     }
 
 
-    public Employee updateExistingVoiceFile(byte[] bytes, Employee employee) {
-        String fileName = employee.getEmpName() + "-" + employee.getEmpId() + ".mp3";
+    public Employee updateExistingVoiceFile(byte[] bytes, Employee employee, String fileType) {
+        String fileName = employee.getEmpName() + "-" + employee.getEmpId() + "." + fileType;
         String upLoadPath = uploadFileToCloud(fileName, bytes);
         //upLoadPath = upLoadPath + signaturePolicy;
         employee.setRecordUrl(upLoadPath);

@@ -34,4 +34,7 @@ public class ConverterUtil {
     }
 
 
+    public void setSignaturePolicy(String signaturePolicy) {
+        this.signaturePolicy = signaturePolicy;
+    }
 }

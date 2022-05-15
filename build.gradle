@@ -1,7 +1,7 @@
 plugins {
-	id 'org.springframework.boot' version '2.6.7'
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-	id 'java'
+    id 'org.springframework.boot' version '2.6.7'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
 }
 
 group = 'com.hackaton.cheetah'
@@ -9,27 +9,28 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
-	mavenCentral()
-	maven {
-		url "https://azureai.azureedge.net/maven/"
-	}
+    mavenCentral()
+    maven {
+        url "https://azureai.azureedge.net/maven/"
+    }
 }
 
 dependencies {
-	implementation group: 'com.microsoft.cognitiveservices.speech', name: 'client-sdk', version: "1.21.0", ext: "jar"
-	implementation 'com.azure:azure-storage-file-share:12.9.0'
-	implementation 'org.apache.poi:poi-ooxml:4.1.2'
-	implementation 'org.springdoc:springdoc-openapi-ui:1.5.13'
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'com.microsoft.sqlserver:mssql-jdbc'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+    implementation group: 'com.microsoft.cognitiveservices.speech', name: 'client-sdk', version: "1.21.0", ext: "jar"
+    implementation 'com.azure:azure-storage-file-share:12.9.0'
+    implementation 'org.apache.poi:poi-ooxml:4.1.2'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.5.13'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'com.microsoft.sqlserver:mssql-jdbc'
+    implementation group: 'org.apache.commons', name: 'commons-io', version: '1.3.2'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
