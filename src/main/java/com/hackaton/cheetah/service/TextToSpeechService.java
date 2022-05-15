@@ -27,7 +27,7 @@ public class TextToSpeechService {
 
     private static final String ServiceRegion = "eastus";
 
-    private final String signaturePolicy = "?sv=2020-10-02&ss=btqf&srt=sco&st=2022-05-14T11%3A37%3A43Z&se=2022-05-15T11%3A37%3A43Z&sp=rwdxlcup&sig=qcyzPuJoo%2BQIxj7SnrRTJANocvqyc6MTb6lVGw1kvj0%3D";
+    private final String signaturePolicy = "?sv=2021-04-10&st=2022-05-15T12%3A04%3A33Z&se=2022-06-24T12%3A04%3A00Z&sr=s&sp=rl&sig=os3D0JS8N428uhgH1VKJDK%2FdtRah5Fx2O12ALGfBivM%3D";
 
     // Speech synthesis to MP3 file.
     public Employee synthesisToMp3FileAsync(Employee employee) throws Exception {
