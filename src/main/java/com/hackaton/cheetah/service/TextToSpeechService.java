@@ -36,7 +36,7 @@ public class TextToSpeechService {
             if (!ObjectUtils.isEmpty(employee.getCountry()))
                 config.setSpeechSynthesisLanguage(employee.getCountry());
 
-      //      config.setSpeechSynthesisVoiceName("en-IN-PrabhatNeural");//English Indian Male Voice
+            //      config.setSpeechSynthesisVoiceName("en-IN-PrabhatNeural");//English Indian Male Voice
 
             PullAudioOutputStream stream = PullAudioOutputStream.create();
             config.setSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3);
@@ -101,7 +101,7 @@ public class TextToSpeechService {
 
 
     public Employee updateExistingVoiceFile(byte[] bytes, Employee employee, String fileType) {
-        String fileName = employee.getEmpName() + "-" + employee.getEmpId() + "." + fileType;
+        String fileName = employee.getEmpName() + "-" + employee.getEmpId() + "." + (ObjectUtils.isEmpty(fileType) ? "wav" : fileType);
         String upLoadPath = uploadFileToCloud(fileName, bytes);
         //upLoadPath = upLoadPath + signaturePolicy;
         employee.setRecordUrl(upLoadPath);
