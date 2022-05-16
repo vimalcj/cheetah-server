@@ -1,0 +1,242 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > TextToSpeechService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/highlight-idea.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.pack.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.hackaton.cheetah.service</a>
+</div>
+
+<h1>Coverage Summary for Class: TextToSpeechService (com.hackaton.cheetah.service)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TextToSpeechService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    79.2%
+  </span>
+  <span class="absValue">
+    (42/53)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">TextToSpeechService$MockitoMock$952357772</td>
+  </tr>
+  <tr>
+    <td class="name">TextToSpeechService$MockitoMock$952357772$auxiliary$hzAt7oCf</td>
+  </tr>
+  <tr>
+    <td class="name">TextToSpeechService$MockitoMock$952357772$auxiliary$j2n869ur</td>
+  </tr>
+  <tr>
+    <td class="name">TextToSpeechService$MockitoMock$952357772$auxiliary$utzdUrh9</td>
+  </tr>
+  <tr>
+    <td class="name">TextToSpeechService$MockitoMock$952357772$auxiliary$xsubDGNv</td>
+  </tr>
+  <tr>
+    <td class="name">TextToSpeechService$MockitoMock$952357772$auxiliary$ySFyZOia</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    79.2%
+  </span>
+  <span class="absValue">
+    (42/53)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<div class="sourceCode" id="sourceCode"><i class="no-highlight">1</i>&nbsp;package com.hackaton.cheetah.service;
+<i class="no-highlight">2</i>&nbsp;
+<i class="no-highlight">3</i>&nbsp;import com.azure.storage.file.share.ShareDirectoryClient;
+<i class="no-highlight">4</i>&nbsp;import com.azure.storage.file.share.ShareFileClient;
+<i class="no-highlight">5</i>&nbsp;import com.azure.storage.file.share.ShareFileClientBuilder;
+<i class="no-highlight">6</i>&nbsp;import com.hackaton.cheetah.model.Employee;
+<i class="no-highlight">7</i>&nbsp;import com.hackaton.cheetah.repository.EmployeeRepository;
+<i class="no-highlight">8</i>&nbsp;import com.microsoft.cognitiveservices.speech.*;
+<i class="no-highlight">9</i>&nbsp;import com.microsoft.cognitiveservices.speech.audio.AudioConfig;
+<i class="no-highlight">10</i>&nbsp;import com.microsoft.cognitiveservices.speech.audio.PullAudioOutputStream;
+<i class="no-highlight">11</i>&nbsp;import lombok.extern.slf4j.Slf4j;
+<i class="no-highlight">12</i>&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+<i class="no-highlight">13</i>&nbsp;import org.springframework.stereotype.Service;
+<i class="no-highlight">14</i>&nbsp;import org.springframework.util.ObjectUtils;
+<i class="no-highlight">15</i>&nbsp;
+<i class="no-highlight">16</i>&nbsp;import java.io.ByteArrayInputStream;
+<i class="no-highlight">17</i>&nbsp;import java.sql.Timestamp;
+<i class="no-highlight">18</i>&nbsp;
+<i class="no-highlight">19</i>&nbsp;@Service
+<b class="fc"><i class="no-highlight">20</i>&nbsp;@Slf4j</b>
+<b class="fc"><i class="no-highlight">21</i>&nbsp;public class TextToSpeechService {</b>
+<i class="no-highlight">22</i>&nbsp;
+<i class="no-highlight">23</i>&nbsp;    @Autowired
+<i class="no-highlight">24</i>&nbsp;    EmployeeRepository employeeRepository;
+<i class="no-highlight">25</i>&nbsp;
+<i class="no-highlight">26</i>&nbsp;    private static final String SubscriptionKey = &quot;9854d01d417c4d99bd730d7aa799478e&quot;;
+<i class="no-highlight">27</i>&nbsp;
+<i class="no-highlight">28</i>&nbsp;    private static final String ServiceRegion = &quot;eastus&quot;;
+<i class="no-highlight">29</i>&nbsp;
+<i class="no-highlight">30</i>&nbsp;    // Speech synthesis to MP3 file.
+<i class="no-highlight">31</i>&nbsp;    public Employee synthesisToMp3FileAsync(Employee employee) throws Exception {
+<i class="no-highlight">32</i>&nbsp;        try {
+<b class="fc"><i class="no-highlight">33</i>&nbsp;            SpeechConfig config = SpeechConfig.fromSubscription(SubscriptionKey, ServiceRegion);</b>
+<i class="no-highlight">34</i>&nbsp;
+<i class="no-highlight">35</i>&nbsp;            // https://docs.microsoft.com/azure/cognitive-services/speech-service/language-support
+<b class="fc"><i class="no-highlight">36</i>&nbsp;            if (!ObjectUtils.isEmpty(employee.getCountry()))</b>
+<b class="fc"><i class="no-highlight">37</i>&nbsp;                config.setSpeechSynthesisLanguage(employee.getCountry());</b>
+<i class="no-highlight">38</i>&nbsp;
+<i class="no-highlight">39</i>&nbsp;            //      config.setSpeechSynthesisVoiceName(&quot;en-IN-PrabhatNeural&quot;);//English Indian Male Voice
+<i class="no-highlight">40</i>&nbsp;
+<b class="fc"><i class="no-highlight">41</i>&nbsp;            PullAudioOutputStream stream = PullAudioOutputStream.create();</b>
+<b class="fc"><i class="no-highlight">42</i>&nbsp;            config.setSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3);</b>
+<b class="fc"><i class="no-highlight">43</i>&nbsp;            String fileName = employee.getEmpName() + &quot;-&quot; + employee.getEmpId() + &quot;.mp3&quot;;</b>
+<i class="no-highlight">44</i>&nbsp;
+<b class="fc"><i class="no-highlight">45</i>&nbsp;            AudioConfig streamOutput = AudioConfig.fromStreamOutput(stream);</b>
+<b class="fc"><i class="no-highlight">46</i>&nbsp;            SpeechSynthesizer synthesizer = new SpeechSynthesizer(config, streamOutput);</b>
+<i class="no-highlight">47</i>&nbsp;
+<b class="fc"><i class="no-highlight">48</i>&nbsp;            String text = employee.getEmpName();</b>
+<b class="fc"><i class="no-highlight">49</i>&nbsp;            SpeechSynthesisResult result = synthesizer.SpeakTextAsync(text).get();</b>
+<b class="fc"><i class="no-highlight">50</i>&nbsp;            if (result.getReason() == ResultReason.SynthesizingAudioCompleted) {</b>
+<b class="fc"><i class="no-highlight">51</i>&nbsp;                log.info(&quot;Speech synthesized for text [&quot; + text + &quot;], and the audio was saved to [&quot; + fileName + &quot;]&quot;);</b>
+<b class="fc"><i class="no-highlight">52</i>&nbsp;                byte[] bytes = result.getAudioData();</b>
+<b class="fc"><i class="no-highlight">53</i>&nbsp;                String upLoadPath = uploadFileToCloud(fileName, bytes);</b>
+<i class="no-highlight">54</i>&nbsp;                //upLoadPath = upLoadPath + signaturePolicy;
+<b class="fc"><i class="no-highlight">55</i>&nbsp;                employee.setRecordUrl(upLoadPath);</b>
+<b class="fc"><i class="no-highlight">56</i>&nbsp;                employee.setCreatedDate(new Timestamp(System.currentTimeMillis()));</b>
+<b class="fc"><i class="no-highlight">57</i>&nbsp;                employee.setUpdatedDate(new Timestamp(System.currentTimeMillis()));</b>
+<b class="fc"><i class="no-highlight">58</i>&nbsp;                employee = employeeRepository.save(employee);</b>
+<b class="fc"><i class="no-highlight">59</i>&nbsp;            } else if (result.getReason() == ResultReason.Canceled) {</b>
+<b class="nc"><i class="no-highlight">60</i>&nbsp;                SpeechSynthesisCancellationDetails cancellation = SpeechSynthesisCancellationDetails.fromResult(result);</b>
+<b class="nc"><i class="no-highlight">61</i>&nbsp;                log.info(&quot;CANCELED: Reason=&quot; + cancellation.getReason());</b>
+<i class="no-highlight">62</i>&nbsp;
+<b class="nc"><i class="no-highlight">63</i>&nbsp;                if (cancellation.getReason() == CancellationReason.Error) {</b>
+<b class="nc"><i class="no-highlight">64</i>&nbsp;                    log.info(&quot;CANCELED: ErrorCode=&quot; + cancellation.getErrorCode());</b>
+<b class="nc"><i class="no-highlight">65</i>&nbsp;                    log.info(&quot;CANCELED: ErrorDetails=&quot; + cancellation.getErrorDetails());</b>
+<b class="nc"><i class="no-highlight">66</i>&nbsp;                    log.info(&quot;CANCELED: Did you update the subscription info?&quot;);</b>
+<i class="no-highlight">67</i>&nbsp;                }
+<i class="no-highlight">68</i>&nbsp;
+<b class="nc"><i class="no-highlight">69</i>&nbsp;                result.close();</b>
+<b class="nc"><i class="no-highlight">70</i>&nbsp;                throw new Exception(&quot;error while generating audio from text reason: &quot; + result.getReason());</b>
+<i class="no-highlight">71</i>&nbsp;            }
+<i class="no-highlight">72</i>&nbsp;
+<b class="fc"><i class="no-highlight">73</i>&nbsp;            synthesizer.close();</b>
+<b class="fc"><i class="no-highlight">74</i>&nbsp;            streamOutput.close();</b>
+<b class="fc"><i class="no-highlight">75</i>&nbsp;            return employee;</b>
+<b class="nc"><i class="no-highlight">76</i>&nbsp;        } catch (Exception e) {</b>
+<b class="nc"><i class="no-highlight">77</i>&nbsp;            log.error(&quot;error in synthesisToMp3FileAsync function&quot;, e);</b>
+<b class="nc"><i class="no-highlight">78</i>&nbsp;            throw e;</b>
+<i class="no-highlight">79</i>&nbsp;        }
+<i class="no-highlight">80</i>&nbsp;
+<i class="no-highlight">81</i>&nbsp;    }
+<i class="no-highlight">82</i>&nbsp;
+<i class="no-highlight">83</i>&nbsp;    public String uploadFileToCloud(String fileName, byte[] bytes) {
+<b class="fc"><i class="no-highlight">84</i>&nbsp;        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);</b>
+<b class="fc"><i class="no-highlight">85</i>&nbsp;        String filepath = &quot;https://sqlvahil7754uizsa4.file.core.windows.net/emp-pronounce/test/&quot;;</b>
+<i class="no-highlight">86</i>&nbsp;        try {
+<b class="fc"><i class="no-highlight">87</i>&nbsp;            ShareDirectoryClient dirClient = new ShareFileClientBuilder()</b>
+<b class="fc"><i class="no-highlight">88</i>&nbsp;                    .connectionString(&quot;DefaultEndpointsProtocol=https;AccountName=sqlvahil7754uizsa4;AccountKey=R6fRuYbXcdDo9TC6pXb86b4nwnvNnWNhPgIDdTSFrUITRpnnRdr6XeFFeyUNlg4kni8PcdFtjwnT+AStF0X0Gg==;BlobEndpoint=https://sqlvahil7754uizsa4.blob.core.windows.net/;QueueEndpoint=https://sqlvahil7754uizsa4.queue.core.windows.net/;TableEndpoint=https://sqlvahil7754uizsa4.table.core.windows.net/;FileEndpoint=https://sqlvahil7754uizsa4.file.core.windows.net/;&quot;).shareName(&quot;emp-pronounce&quot;)</b>
+<b class="fc"><i class="no-highlight">89</i>&nbsp;                    .resourcePath(&quot;test&quot;)</b>
+<b class="fc"><i class="no-highlight">90</i>&nbsp;                    .buildDirectoryClient();</b>
+<i class="no-highlight">91</i>&nbsp;
+<b class="fc"><i class="no-highlight">92</i>&nbsp;            log.info(&quot;uploadFile fileName: &quot; + fileName);</b>
+<b class="fc"><i class="no-highlight">93</i>&nbsp;            ShareFileClient fileClient = dirClient.createFile(fileName, bytes.length);</b>
+<b class="fc"><i class="no-highlight">94</i>&nbsp;            fileClient.upload(bis, bytes.length);</b>
+<b class="fc"><i class="no-highlight">95</i>&nbsp;            return filepath + fileName;</b>
+<b class="fc"><i class="no-highlight">96</i>&nbsp;        } catch (Exception e) {</b>
+<b class="fc"><i class="no-highlight">97</i>&nbsp;            log.error(&quot;uploadFile exception: &quot; + e.getMessage());</b>
+<b class="fc"><i class="no-highlight">98</i>&nbsp;            return &quot;&quot;;</b>
+<i class="no-highlight">99</i>&nbsp;        }
+<i class="no-highlight">100</i>&nbsp;    }
+<i class="no-highlight">101</i>&nbsp;
+<i class="no-highlight">102</i>&nbsp;
+<i class="no-highlight">103</i>&nbsp;    public Employee updateExistingVoiceFile(byte[] bytes, Employee employee, String fileType) {
+<b class="fc"><i class="no-highlight">104</i>&nbsp;        String fileName = employee.getEmpName() + &quot;-&quot; + employee.getEmpId() + &quot;.&quot; + (ObjectUtils.isEmpty(fileType) ? &quot;wav&quot; : fileType);</b>
+<b class="fc"><i class="no-highlight">105</i>&nbsp;        String upLoadPath = uploadFileToCloud(fileName, bytes);</b>
+<i class="no-highlight">106</i>&nbsp;        //upLoadPath = upLoadPath + signaturePolicy;
+<b class="fc"><i class="no-highlight">107</i>&nbsp;        employee.setRecordUrl(upLoadPath);</b>
+<b class="fc"><i class="no-highlight">108</i>&nbsp;        employee.setUpdatedDate(new Timestamp(System.currentTimeMillis()));</b>
+<b class="fc"><i class="no-highlight">109</i>&nbsp;        return employeeRepository.save(employee);</b>
+<i class="no-highlight">110</i>&nbsp;    }
+<i class="no-highlight">111</i>&nbsp;
+<i class="no-highlight">112</i>&nbsp;}
+</div>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+        var codeBlock = document.getElementById('sourceCode');
+
+        if (codeBlock) {
+            hljs.highlightBlock(codeBlock);
+        }
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2022-05-17 03:27</div>
+</div>
+</body>
+</html>

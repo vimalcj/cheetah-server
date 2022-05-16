@@ -1,0 +1,173 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ConverterUtil</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/highlight-idea.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.pack.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.hackaton.cheetah.converter</a>
+</div>
+
+<h1>Coverage Summary for Class: ConverterUtil (com.hackaton.cheetah.converter)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ConverterUtil</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/14)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ConverterUtil$MockitoMock$1171888103</td>
+  </tr>
+  <tr>
+    <td class="name">ConverterUtil$MockitoMock$1171888103$auxiliary$joIixu2p</td>
+  </tr>
+  <tr>
+    <td class="name">ConverterUtil$MockitoMock$1171888103$auxiliary$pEUy5EVX</td>
+  </tr>
+  <tr>
+    <td class="name">ConverterUtil$MockitoMock$1171888103$auxiliary$ScyL4ZYM</td>
+  </tr>
+  <tr>
+    <td class="name">ConverterUtil$MockitoMock$1171888103$auxiliary$uXFNql6L</td>
+  </tr>
+  <tr>
+    <td class="name">ConverterUtil$MockitoMock$1171888103$auxiliary$YHcS3MBx</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/14)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<div class="sourceCode" id="sourceCode"><i class="no-highlight">1</i>&nbsp;package com.hackaton.cheetah.converter;
+<i class="no-highlight">2</i>&nbsp;
+<i class="no-highlight">3</i>&nbsp;import com.hackaton.cheetah.model.Employee;
+<i class="no-highlight">4</i>&nbsp;import com.hackaton.cheetah.model.User;
+<i class="no-highlight">5</i>&nbsp;import org.springframework.beans.factory.annotation.Value;
+<i class="no-highlight">6</i>&nbsp;import org.springframework.stereotype.Component;
+<i class="no-highlight">7</i>&nbsp;import org.springframework.util.ObjectUtils;
+<i class="no-highlight">8</i>&nbsp;
+<i class="no-highlight">9</i>&nbsp;import java.util.List;
+<i class="no-highlight">10</i>&nbsp;import java.util.stream.Collectors;
+<i class="no-highlight">11</i>&nbsp;
+<i class="no-highlight">12</i>&nbsp;@Component
+<b class="fc"><i class="no-highlight">13</i>&nbsp;public class ConverterUtil {</b>
+<i class="no-highlight">14</i>&nbsp;
+<i class="no-highlight">15</i>&nbsp;    @Value(&quot;${azure.storage.signature}&quot;)
+<i class="no-highlight">16</i>&nbsp;    private String signaturePolicy; //= &quot;?sv=2021-04-10&amp;st=2022-05-15T12%3A04%3A33Z&amp;se=2022-06-24T12%3A04%3A00Z&amp;sr=s&amp;sp=rl&amp;sig=os3D0JS8N428uhgH1VKJDK%2FdtRah5Fx2O12ALGfBivM%3D&quot;;
+<i class="no-highlight">17</i>&nbsp;
+<i class="no-highlight">18</i>&nbsp;
+<i class="no-highlight">19</i>&nbsp;    public User convertToUser(Employee employee) {
+<b class="fc"><i class="no-highlight">20</i>&nbsp;        String sign = signaturePolicy + &quot;&amp;tmpId=&quot; + java.util.UUID.randomUUID();</b>
+<b class="fc"><i class="no-highlight">21</i>&nbsp;        return User.builder().userId(employee.getUID())</b>
+<b class="fc"><i class="no-highlight">22</i>&nbsp;                .empId(employee.getEmpId())</b>
+<b class="fc"><i class="no-highlight">23</i>&nbsp;                .name(employee.getEmpName())</b>
+<b class="fc"><i class="no-highlight">24</i>&nbsp;                .admin(employee.getIsAdmin())</b>
+<b class="fc"><i class="no-highlight">25</i>&nbsp;                .email(employee.getEmail())</b>
+<b class="fc"><i class="no-highlight">26</i>&nbsp;                .imageUrl(ObjectUtils.isEmpty(employee.getImageUrl()) ? &quot;&quot; : employee.getImageUrl().concat(sign))</b>
+<b class="fc"><i class="no-highlight">27</i>&nbsp;                .recordUrl((ObjectUtils.isEmpty(employee.getRecordUrl()) ? &quot;&quot; : employee.getRecordUrl().concat(sign)))</b>
+<b class="fc"><i class="no-highlight">28</i>&nbsp;                .createdTs(employee.getCreatedDate())</b>
+<b class="fc"><i class="no-highlight">29</i>&nbsp;                .modifiedTs(employee.getUpdatedDate())</b>
+<b class="fc"><i class="no-highlight">30</i>&nbsp;                .build();</b>
+<i class="no-highlight">31</i>&nbsp;    }
+<i class="no-highlight">32</i>&nbsp;
+<i class="no-highlight">33</i>&nbsp;    public List&lt;User&gt; convertToUser(List&lt;Employee&gt; employees) {
+<b class="fc"><i class="no-highlight">34</i>&nbsp;        return employees.stream().map(this::convertToUser).collect(Collectors.toList());</b>
+<i class="no-highlight">35</i>&nbsp;    }
+<i class="no-highlight">36</i>&nbsp;
+<i class="no-highlight">37</i>&nbsp;
+<i class="no-highlight">38</i>&nbsp;    public void setSignaturePolicy(String signaturePolicy) {
+<b class="fc"><i class="no-highlight">39</i>&nbsp;        this.signaturePolicy = signaturePolicy;</b>
+<i class="no-highlight">40</i>&nbsp;    }
+<i class="no-highlight">41</i>&nbsp;
+<i class="no-highlight">42</i>&nbsp;
+<i class="no-highlight">43</i>&nbsp;}
+</div>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+        var codeBlock = document.getElementById('sourceCode');
+
+        if (codeBlock) {
+            hljs.highlightBlock(codeBlock);
+        }
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2022-05-17 03:27</div>
+</div>
+</body>
+</html>

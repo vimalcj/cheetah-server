@@ -1,0 +1,169 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > LoginController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/highlight-idea.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.pack.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.hackaton.cheetah.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: LoginController (com.hackaton.cheetah.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LoginController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    83.3%
+  </span>
+  <span class="absValue">
+    (15/18)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<div class="sourceCode" id="sourceCode"><i class="no-highlight">1</i>&nbsp;package com.hackaton.cheetah.controller;
+<i class="no-highlight">2</i>&nbsp;
+<i class="no-highlight">3</i>&nbsp;import com.hackaton.cheetah.converter.ConverterUtil;
+<i class="no-highlight">4</i>&nbsp;import com.hackaton.cheetah.model.Employee;
+<i class="no-highlight">5</i>&nbsp;import com.hackaton.cheetah.model.LoginRequest;
+<i class="no-highlight">6</i>&nbsp;import com.hackaton.cheetah.model.User;
+<i class="no-highlight">7</i>&nbsp;import com.hackaton.cheetah.repository.EmployeeRepository;
+<i class="no-highlight">8</i>&nbsp;import lombok.extern.slf4j.Slf4j;
+<i class="no-highlight">9</i>&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+<i class="no-highlight">10</i>&nbsp;import org.springframework.beans.factory.annotation.Value;
+<i class="no-highlight">11</i>&nbsp;import org.springframework.http.HttpStatus;
+<i class="no-highlight">12</i>&nbsp;import org.springframework.http.ResponseEntity;
+<i class="no-highlight">13</i>&nbsp;import org.springframework.web.bind.annotation.*;
+<i class="no-highlight">14</i>&nbsp;
+<i class="no-highlight">15</i>&nbsp;import javax.validation.Valid;
+<i class="no-highlight">16</i>&nbsp;import java.util.Optional;
+<i class="no-highlight">17</i>&nbsp;
+<i class="no-highlight">18</i>&nbsp;@RestController
+<i class="no-highlight">19</i>&nbsp;@RequestMapping(&quot;/auth&quot;)
+<i class="no-highlight">20</i>&nbsp;@CrossOrigin
+<b class="fc"><i class="no-highlight">21</i>&nbsp;@Slf4j</b>
+<b class="fc"><i class="no-highlight">22</i>&nbsp;public class LoginController {</b>
+<i class="no-highlight">23</i>&nbsp;
+<i class="no-highlight">24</i>&nbsp;    @Autowired
+<i class="no-highlight">25</i>&nbsp;    EmployeeRepository employeeRepository;
+<i class="no-highlight">26</i>&nbsp;
+<i class="no-highlight">27</i>&nbsp;    @Autowired
+<i class="no-highlight">28</i>&nbsp;    ConverterUtil converterUtil;
+<i class="no-highlight">29</i>&nbsp;
+<i class="no-highlight">30</i>&nbsp;    @Value(&quot;${user.defaults.password}&quot;)
+<i class="no-highlight">31</i>&nbsp;    private String defaultPassword;
+<i class="no-highlight">32</i>&nbsp;
+<i class="no-highlight">33</i>&nbsp;    @GetMapping(&quot;/ping&quot;)
+<i class="no-highlight">34</i>&nbsp;    public ResponseEntity&lt;String&gt; ping() {
+<b class="fc"><i class="no-highlight">35</i>&nbsp;        return new ResponseEntity&lt;&gt;(&quot;Cheetah server is up and running&quot;, HttpStatus.OK);</b>
+<i class="no-highlight">36</i>&nbsp;    }
+<i class="no-highlight">37</i>&nbsp;
+<i class="no-highlight">38</i>&nbsp;    @PostMapping(&quot;/login&quot;)
+<i class="no-highlight">39</i>&nbsp;    public ResponseEntity&lt;User&gt; login(@RequestBody @Valid LoginRequest loginRequest) {
+<b class="fc"><i class="no-highlight">40</i>&nbsp;        Optional&lt;Employee&gt; byEmpNameAndPassword = employeeRepository.findByUIDAndPassword(loginRequest.getUsername(), loginRequest.getPassword());</b>
+<i class="no-highlight">41</i>&nbsp;
+<b class="fc"><i class="no-highlight">42</i>&nbsp;        log.info(&quot;Login called {}&quot;, loginRequest);</b>
+<b class="fc"><i class="no-highlight">43</i>&nbsp;        if (byEmpNameAndPassword.isEmpty()) {</b>
+<b class="nc"><i class="no-highlight">44</i>&nbsp;            log.info(&quot;employee  not found&quot;);</b>
+<b class="nc"><i class="no-highlight">45</i>&nbsp;            return new ResponseEntity&lt;&gt;(HttpStatus.UNAUTHORIZED);</b>
+<i class="no-highlight">46</i>&nbsp;        }
+<b class="fc"><i class="no-highlight">47</i>&nbsp;        Employee employee = byEmpNameAndPassword.get();</b>
+<b class="fc"><i class="no-highlight">48</i>&nbsp;        User user = converterUtil.convertToUser(employee);</b>
+<b class="fc"><i class="no-highlight">49</i>&nbsp;        return new ResponseEntity&lt;&gt;(user, HttpStatus.OK);</b>
+<i class="no-highlight">50</i>&nbsp;    }
+<i class="no-highlight">51</i>&nbsp;
+<i class="no-highlight">52</i>&nbsp;    @PostMapping(&quot;/resetPassword&quot;)
+<i class="no-highlight">53</i>&nbsp;    public ResponseEntity&lt;String&gt; resetPassword(@RequestParam(&quot;userName&quot;) String UID) {
+<b class="fc"><i class="no-highlight">54</i>&nbsp;        Optional&lt;Employee&gt; employeeOptional = employeeRepository.findByUID(UID);</b>
+<b class="fc"><i class="no-highlight">55</i>&nbsp;        if (employeeOptional.isPresent()) {</b>
+<b class="fc"><i class="no-highlight">56</i>&nbsp;            Employee employee = employeeOptional.get();</b>
+<b class="fc"><i class="no-highlight">57</i>&nbsp;            employee.setPassword(defaultPassword);</b>
+<b class="fc"><i class="no-highlight">58</i>&nbsp;            employeeRepository.save(employee);</b>
+<b class="fc"><i class="no-highlight">59</i>&nbsp;            return new ResponseEntity&lt;&gt;(String.format(&quot;Your new password is &#39;%s&#39;&quot;, defaultPassword), HttpStatus.OK);</b>
+<i class="no-highlight">60</i>&nbsp;        } else {
+<b class="nc"><i class="no-highlight">61</i>&nbsp;            return new ResponseEntity&lt;&gt;(String.format(&quot;User not found with Id &#39;%s&#39;&quot;, UID), HttpStatus.UNAUTHORIZED);</b>
+<i class="no-highlight">62</i>&nbsp;        }
+<i class="no-highlight">63</i>&nbsp;    }
+<i class="no-highlight">64</i>&nbsp;}
+</div>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+        var codeBlock = document.getElementById('sourceCode');
+
+        if (codeBlock) {
+            hljs.highlightBlock(codeBlock);
+        }
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2022-05-17 03:27</div>
+</div>
+</body>
+</html>

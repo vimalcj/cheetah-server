@@ -1,0 +1,152 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > User</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/highlight-idea.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.pack.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.hackaton.cheetah.model</a>
+</div>
+
+<h1>Coverage Summary for Class: User (com.hackaton.cheetah.model)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">User</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">User$UserBuilder</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (13/13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (13/13)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<div class="sourceCode" id="sourceCode"><i class="no-highlight">1</i>&nbsp;package com.hackaton.cheetah.model;
+<i class="no-highlight">2</i>&nbsp;
+<i class="no-highlight">3</i>&nbsp;import lombok.Builder;
+<i class="no-highlight">4</i>&nbsp;import lombok.Data;
+<i class="no-highlight">5</i>&nbsp;
+<i class="no-highlight">6</i>&nbsp;import java.sql.Timestamp;
+<i class="no-highlight">7</i>&nbsp;
+<b class="fc"><i class="no-highlight">8</i>&nbsp;@Data</b>
+<b class="fc"><i class="no-highlight">9</i>&nbsp;@Builder</b>
+<i class="no-highlight">10</i>&nbsp;public class User {
+<b class="fc"><i class="no-highlight">11</i>&nbsp;    private String userId;</b>
+<b class="fc"><i class="no-highlight">12</i>&nbsp;    private String name;</b>
+<b class="fc"><i class="no-highlight">13</i>&nbsp;    private boolean admin;</b>
+<b class="fc"><i class="no-highlight">14</i>&nbsp;    private String country;</b>
+<b class="fc"><i class="no-highlight">15</i>&nbsp;    private String recordUrl;</b>
+<b class="fc"><i class="no-highlight">16</i>&nbsp;    private String email;</b>
+<b class="fc"><i class="no-highlight">17</i>&nbsp;    private String imageUrl;</b>
+<b class="fc"><i class="no-highlight">18</i>&nbsp;    private Long empId;</b>
+<b class="fc"><i class="no-highlight">19</i>&nbsp;    private Timestamp createdTs;</b>
+<b class="fc"><i class="no-highlight">20</i>&nbsp;    private Timestamp modifiedTs;</b>
+<i class="no-highlight">21</i>&nbsp;}
+</div>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+        var codeBlock = document.getElementById('sourceCode');
+
+        if (codeBlock) {
+            hljs.highlightBlock(codeBlock);
+        }
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2022-05-17 03:27</div>
+</div>
+</body>
+</html>
