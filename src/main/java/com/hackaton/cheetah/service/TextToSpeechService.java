@@ -36,7 +36,7 @@ public class TextToSpeechService {
             if (!ObjectUtils.isEmpty(employee.getCountry()))
                 config.setSpeechSynthesisLanguage(employee.getCountry());
 
-            config.setSpeechSynthesisVoiceName("te-IN-MohanNeural");//Telugu male
+            config.setSpeechSynthesisVoiceName("en-IN-PrabhatNeural");//English Indian Male Voice
 
             PullAudioOutputStream stream = PullAudioOutputStream.create();
             config.setSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3);
