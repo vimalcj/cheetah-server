@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.SQLException;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -158,4 +159,25 @@ public class EmpPronounceController {
     public ResponseEntity<List<User>> searchEmployees(@PathVariable("searchString") String searchString) {
         return new ResponseEntity<>(converterUtil.convertToUser(employeeRepository.employeeGenericSearch(searchString)), HttpStatus.OK);
     }
+
+    @PostMapping(value = "/v2/record")
+    public ResponseEntity<User> stream(@RequestParam("userName") String userName, @RequestParam("file") String base64Audio) {
+        try {
+            System.out.println("incoming message ...");
+            Base64.Decoder decoder = Base64.getDecoder();
+            byte[] decodedByte = decoder.decode(base64Audio.split(",")[1]);
+
+            Optional<Employee> employee = employeeRepository.findByUID(userName);
+            if (employee.isPresent()) {
+                Employee UpdatedEmp = textToSpeechService.updateExistingVoiceFile(decodedByte, employee.get(), "wav");
+                return new ResponseEntity<>(converterUtil.convertToUser(UpdatedEmp), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+        } catch (Exception e) {
+            log.error("error while uploading teh audio file", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }
